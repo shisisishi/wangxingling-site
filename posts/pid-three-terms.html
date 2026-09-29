@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PID 三项各自在干什么——一次真跑的仿真讲清楚｜王兴领</title>
+<meta name="description" content="用一台直流电机的 PC 仿真，逐项扫 Kp/Ki/Kd：稳态误差、超调、上升时间、控制量抖动，每个结论都对应真实 CSV 数据。">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="../index.html">
+      <span class="dot"></span>
+      <span class="zh">王兴领 <small>· WXL</small></span>
+      <span class="en">Wang Xingling <small>· WXL</small></span>
+    </a>
+    <div class="nav-links">
+      <a href="../index.html#skills"><span class="zh">技能对照</span><span class="en">Skill map</span></a>
+      <a href="../index.html#projects"><span class="zh">项目</span><span class="en">Projects</span></a>
+      <a href="../index.html#posts"><span class="zh">全部文章</span><span class="en">All writing</span></a>
+      <a href="../resume.html"><span class="zh">简历</span><span class="en">Résumé</span></a>
+    </div>
+    <button class="lang-btn" type="button" aria-label="切换语言 / Switch language">EN</button>
+  </div>
+</nav>
+
+<div class="wrap crumb">
+  <a href="../index.html"><span class="zh">首页</span><span class="en">Home</span></a> / <a href="../index.html#posts"><span class="zh">文章</span><span class="en">Writing</span></a> / PID 01
+</div>
+
+<div class="wrap">
+  <header class="article-head">
+    <span class="kicker">
+      <span class="zh">控制算法 · 实验记录</span><span class="en">Control · Lab note</span>
+    </span>
+    <h1><span class="zh">PID 三项各自在干什么——一次真跑的仿真讲清楚</span><span class="en">What each PID term really does — explained by a run I actually did</span></h1>
+    <div class="article-meta">
+      <span>2026-09-16</span>
+      <span>·</span>
+      <span class="zh">约 12 分钟</span><span class="en">~12 min</span>
+      <span>·</span>
+      <span>Kp / Ki / Kd · <span class="zh">18 组参数</span><span class="en">18 cases</span></span>
+      <span>·</span>
+      <span>code/06-pid-sim</span>
+    </div>
+  </header>
+
+  <div class="callout en" style="margin-top:22px">
+    <span class="t">Note</span>
+    This write-up is in Chinese, but the charts, code and data are language-neutral. Ping me in English any time — I'm happy to walk through any figure.
+  </div>
+
+  <article class="article-body">
+    <p>
+      「Kp 调大响应快但会超调，Ki 消除稳态误差，Kd 抑制超调但对噪声敏感」——这句话我背过很多遍，但背下来不等于明白。我第一次真正搞懂，是在自己写的仿真里
+      <strong>把同一个参数从很小加到很大，然后把每一组的关键指标摊在表格里对比</strong>的时候。
+    </p>
+    <p>
+      这篇是我那份仿真的实验记录。<strong>下面出现的每个数字，都来自仓库里 <code>code/06-pid-sim</code> 的真实运行输出</strong>（本机 gcc 16.2 编译），对应的 CSV 一起在仓库里，你可以自己重跑核对。
+    </p>
+
+    <h2>一、为什么先在电脑上做，而不是等板子</h2>
+    <p>三个理由，也是我在 <code>sim.c</code> 开头写下的：</p>
+    <ul>
+      <li><strong>效率</strong>：上板子一次只能试一组参数，改一次要重编译下载、大约 30 秒；18 组就是 9 分钟。仿真 18 组跑完不到 0.1 秒。</li>
+      <li><strong>控制变量</strong>：仿真里被控对象是固定的，所以 Kp 改大之后性能变化<strong>一定</strong>来自 Kp，而不是「这次电池电压低了」或者「桌面不平」。这是做实验的基本功。</li>
+      <li><strong>先扫范围再上机</strong>：仿真把参数的大致区间扫出来，上板子只需要在这个区间里微调。</li>
+    </ul>
+    <div class="callout warn">
+      <span class="t">也得说清仿真的边界</span>
+      仿真只能说明「在这个模型里，参数的作用是这样」。真实电机还有齿槽转矩、摩擦非线性、编码器量化、PWM 死区……所以它<strong>替代不了上机</strong>，它的作用是在上机之前把方向定对。我的板子到货后会补上真机数据对照。
+    </div>
+
+    <h2>二、实验设置（可核对）</h2>
+    <p>被控对象是一台 12 V 小型直流电机的<strong>电枢 + 机械</strong>完整模型，不是随手凑的一阶惯性环节：</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr>
+          <th>项目</th>
+          <th>取值</th>
+          <th>说明</th>
+        </tr></thead>
+        <tbody>
+          <tr><td>电枢电阻 / 电感</td><td>1 Ω / 0.5 mH</td><td>电气时间常数 τe = L/R = <strong>0.5 ms</strong></td></tr>
+          <tr><td>反电动势 / 转矩常数</td><td>≈ 0.0318 (SI)</td><td>空载约 300 rpm/V，国际单位制下 Kt = Ke</td></tr>
+          <tr><td>转动惯量 / 粘性摩擦</td><td>5.5e-5 kg·m² / 1e-6</td><td>机械时间常数 τm = J·R/(Kt·Ke) ≈ <strong>54 ms</strong></td></tr>
+          <tr><td>物理积分步长</td><td>20 µs</td><td>必须远小于 τe = 0.5 ms，否则前向欧拉法会数值发散</td></tr>
+          <tr><td>控制周期</td><td>1 ms (1 kHz)</td><td>RM 常见的控制频率</td></tr>
+          <tr><td>目标转速</td><td>200 rad/s</td><td>约 1910 rpm</td></tr>
+          <tr><td>控制量限幅</td><td>±12 V</td><td>对应电源电压；<strong>很多结论都源于这个限制</strong></td></tr>
+          <tr><td>仿真时长</td><td>0.5 s / 500 步</td><td>足够看到稳态</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>实验规则只有一条：<strong>每组只改一个变量</strong>，其余与对照组完全一致。</p>
+
+    <h2>三、只有 P：为什么它永远追不上目标</h2>
+    <p>纯比例控制下，输出就是 <code>u = Kp · e</code>。转速越接近目标，误差越小，能给出的电压也越小——所以它<strong>必然</strong>停在某个「电压刚好够顶住摩擦和反电动势」的地方，永远差一截。</p>
+    <figure>
+      <div class="chart-frame">
+        <img src="../assets/img/chart-p-kp-sweep.svg" alt="Kp 从 0.3 到 8 的阶跃响应：稳态误差逐步变小，Kp=8 开始振荡">
+      </div>
+      <figcaption><b>图 1 · 只有 P，扫 Kp。</b>Kp 越大稳态误差越小，但到 Kp=8 时开始持续振荡。</figcaption>
+    </figure>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>场景</th><th>Kp</th><th>上升时间</th><th>超调</th><th>稳态误差</th><th>调节时间</th><th>输出抖动</th></tr></thead>
+        <tbody>
+          <tr><td><code>P_kp0.3</code></td><td>0.3</td><td>40 ms</td><td>0</td><td><strong>19.20</strong> rad/s</td><td>—</td><td>0 V</td></tr>
+          <tr><td><code>P_kp1</code></td><td>1.0</td><td>32 ms</td><td>0</td><td><strong>6.18</strong> rad/s</td><td>—</td><td>0 V</td></tr>
+          <tr><td><code>P_kp3</code></td><td>3.0</td><td>32 ms</td><td>0</td><td><strong>2.10</strong> rad/s</td><td>39 ms</td><td>0 V</td></tr>
+          <tr><td><code>P_kp8</code></td><td>8.0</td><td>32 ms</td><td>0.85%</td><td><strong>1.21</strong> rad/s</td><td>444 ms</td><td><strong>9.20 V</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>这张表里有两个我在写之前没想到的点：</p>
+    <ul>
+      <li><strong>Kp 从 0.3 加到 8（26 倍），上升时间只从 40 ms 变成 32 ms 就再也不动了。</strong>原因不是「饱和了」这么简单——启动阶段误差高达 200 rad/s，<code>u = Kp·e</code> 无论 Kp 取 1 还是 8 都已经超过 12 V 被限幅顶住，此时电机就在以「电源能给的加速度」加速。<strong>能多快，由电源电压决定，不由 Kp 决定。</strong></li>
+      <li><strong>Kp=8 时误差确实降到了 1.21 rad/s，代价是输出在稳态持续抖动（9.2 V/次采样，峰峰 19.9 V）</strong>，调节时间从 39 ms 恶化到 444 ms。这就是「Kp 太大为什么会振」——增益高到一定程度，控制系统开始对每个小偏差都过度反应。</li>
+    </ul>
+    <div class="callout">
+      <span class="t">为什么 Kp=8 的误差没有继续按公式变小</span>
+      如果按理想线性模型算，Kp=8 应该把误差压到 0.8 rad/s 左右。实际是 1.21 —— 因为此时系统已经在振荡，稳态误差取的是后 10% 时间的平均偏差，振荡把平均值抬高了。<strong>公式给的是理想值，数据给的是实际值；两者不一致的地方，就是模型之外的东西。</strong>
+    </div>
+
+    <h2>四、加上 I：稳态误差被消掉，代价是超调</h2>
+    <p>积分项的做法是把误差<strong>累加</strong>起来：只要还有一点误差，积分项就继续涨，直到误差归零。<strong>所以积分是唯一能真正消掉稳态误差的项</strong>。</p>
+    <figure>
+      <div class="chart-frame">
+        <img src="../assets/img/chart-pi-ki-sweep.svg" alt="固定 Kp=1，Ki 从 0 到 50 的阶跃响应对比">
+      </div>
+      <figcaption><b>图 2 · 固定 Kp=1，扫 Ki。</b>Ki=0 时误差 6.18 rad/s；Ki 一大，曲线穿过目标值继续往上——这就是超调。</figcaption>
+    </figure>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>场景</th><th>Ki</th><th>超调</th><th>稳态误差</th><th>调节时间</th></tr></thead>
+        <tbody>
+          <tr><td><code>PI_ki0</code></td><td>0</td><td>0%</td><td>6.18 rad/s</td><td>—</td></tr>
+          <tr><td><code>PI_ki2</code></td><td>2</td><td>0.87%</td><td>−0.48 rad/s</td><td>39 ms</td></tr>
+          <tr><td><code>PI_ki10</code></td><td>10</td><td>2.96%</td><td>−0.08 rad/s</td><td>74 ms</td></tr>
+          <tr><td><code>PI_ki50</code></td><td>50</td><td>2.89%</td><td>−0.0000 rad/s</td><td>48 ms</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      稳态误差列里 Ki=2 和 Ki=10 都是<strong>负数</strong>，意思是转速<strong>超过了</strong>目标值。这不是错误：积分项在误差还很小的时候已经攒下了一些「存货」，等误差反向它才会慢慢花掉。这正好解释了超调——<strong>超调就是积分项的存货在买单</strong>。
+    </p>
+    <p>
+      Ki=50 时误差已经小到 0.0000（比 Ki=10 的 0.08 又小两个数量级）。但注意它<strong>并没有更糟的超调（2.89% vs 2.96%）</strong>——因为这一组开着积分限幅（抗饱和）。把限幅关掉会怎样？那是另一篇的故事，也是这个仿真里最戏剧性的一组数据：<a href="integral-windup.html">超调直接从 1% 干到 44%</a>。
+    </p>
+
+    <h2>五、加上 D：抑制超调，但把噪声一起放大</h2>
+    <p>微分项看的是<strong>误差变化的快慢</strong>：接近目标时变化越快，它就越用力往回压，所以能压超调。固定 Kp=1 / Ki=10（这组本身超调 2.96%，才看得出 D 的作用），把 Kd 加上去：</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>场景</th><th>Kd</th><th>超调</th><th>相对无 D 的变化</th></tr></thead>
+        <tbody>
+          <tr><td><code>PID_kd0</code></td><td>0</td><td>2.959%</td><td>—</td></tr>
+          <tr><td><code>PID_kd0005</code></td><td>0.0005</td><td>2.603%</td><td>−12.0%</td></tr>
+          <tr><td><code>PID_kd001</code></td><td>0.001</td><td>2.550%</td><td>−13.8%</td></tr>
+          <tr><td><code>PID_kd002</code></td><td>0.002</td><td><strong>2.486%</strong></td><td>−16.0%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      看起来只是小幅改善——因为在这个理想模型里本来就没有噪声，也没有量化误差。微分项的<strong>真面目要在有噪声的时候才露出来</strong>。于是我又补了一组实验：给测量值加 2 rad/s 的随机噪声（模拟真实编码器 + 干扰），基准特意取 Ki=0，这样纹波里就不会混进「积分项对噪声随机游走」的成分，剩下的差异全是微分项一个人的锅。
+    </p>
+    <figure>
+      <div class="chart-frame">
+        <img src="../assets/img/chart-noise-d-filter.svg" alt="噪声场景下 Kd 使抖动从 1.69V 升到 4.73V，一阶低通滤波后回到 1.88V">
+      </div>
+      <figcaption><b>图 3 · 噪声下的微分项，以及低通滤波能救回多少。</b></figcaption>
+    </figure>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>场景</th><th>Kd</th><th>τ<sub>滤波</sub></th><th>输出抖动</th><th>稳态波动峰峰</th></tr></thead>
+        <tbody>
+          <tr><td><code>noise_nod</code></td><td>0</td><td>—</td><td>1.69 V</td><td>5.48 V</td></tr>
+          <tr><td><code>noise_d</code></td><td>0.001</td><td>0（不滤波）</td><td><strong>4.73 V</strong> ↑2.8×</td><td>12.85 V</td></tr>
+          <tr><td><code>noise_d_f2</code></td><td>0.001</td><td>2 ms</td><td>2.50 V</td><td>7.48 V</td></tr>
+          <tr><td><code>noise_d_f10</code></td><td>0.001</td><td>10 ms</td><td><strong>1.88 V</strong> ≈ 无 D 水平</td><td>5.85 V</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>为什么加了 D 会抖成这样？算一下量纲就明白了：</p>
+    <pre><span class="c">// 微分先行：对测量值微分（pid.c）</span>
+d_raw = -kd * (measurement - prev_measure) / dt;
+
+<span class="c">// Kd = 0.001，dt = 1 ms ⇒ 除以 dt 等于把测量值的差放大 1000 倍</span>
+<span class="c">// 编码器噪声 2 rad/s 的抖动 → 微分项上变成 0.001 × 2 / 0.001 = 2 V 级别的输出抖动</span></pre>
+    <p>
+      解决办法是在微分项后面串一个一阶低通（<code>y[k] = y[k-1] + α·(x[k] − y[k-1])</code>，<code>α = dt/(τ+dt)</code>，一个乘加就够，非常适合单片机）。<strong>τ=10 ms 时抖动回落到 1.88 V，基本回到不加微分时的水平，而微分抑制超调的好处基本保留。</strong>代价是相位滞后——τ 越大越平滑、滞后越多，所以不能一直加大，经验取采样周期的 3~10 倍。
+    </p>
+
+    <h2>六、三个结论</h2>
+    <ol>
+      <li><strong>P 决定「追得多狠」，但追不到底。</strong>稳态误差一定存在，且 Kp 加到一定程度后上升时间不再改善——那部分是由电源电压和执行器上限决定的。</li>
+      <li><strong>I 是唯一能消掉稳态误差的项，它的代价是超调。</strong>超调的本质是积分项在误差反向之前攒下的「存货」，所以抗饱和（积分限幅）才是工程上必须做的事。</li>
+      <li><strong>D 抑制超调，但它同时是一个噪声放大器</strong>（增益 ∝ 1/dt）。所以「先微分、再低通」几乎是标配，不是可选项。</li>
+    </ol>
+
+    <h2>七、我自己踩的两个坑</h2>
+    <ul>
+      <li><strong>物理步长不能偷懒。</strong>一开始我用 <code>dt = 1 ms</code> 做物理积分，结果仿真直接发散。原因是前向欧拉法条件稳定，要求 <code>dt &lt; 2·τe</code>；本例 τe = L/R = 0.5 ms，<code>dt = 1 ms</code> 正好踩在稳定边界上。改成 20 µs 后一切正常。<strong>数值方法的稳定条件，是写仿真之前就该算的东西。</strong></li>
+      <li><strong>C99 里浮点表达式不是整数常量。</strong>我写了 <code>#define N_STEPS (T_END / CTRL_DT)</code>，用它当数组维度时报 <em>storage size isn't constant</em>。这个坑是<strong>真编译的时候才发现的</strong>——所以这份代码我坚持真编译真运行，不写「伪代码片段」。</li>
+    </ul>
+
+    <h2>八、自己验证一遍（约 3 分钟）</h2>
+    <pre>git clone https://github.com/shisisishi/stm32-learning-notes
+cd stm32-learning-notes/code/06-pid-sim
+gcc -O2 -std=c99 -Wall -Wextra -o pidsim sim.c pid.c plant.c -lm
+./pidsim
+
+<span class="c"># 核对：data/metrics.csv 里 P_kp0.3 那一行的 sse 应该是 19.2034</span>
+<span class="c">#      data/metrics.csv 里 windup_off 的 overshoot_pct 应该是 44.04</span></pre>
+    <div class="callout">
+      <span class="t">数字对不上怎么办</span>
+      伪随机数用的是自写的 LCG 并固定种子（<code>g_seed = 12345</code>），不依赖 <code>rand()</code>，所以<strong>同一份代码在任何平台跑出来应该完全一致</strong>。如果你跑出来的数字和这里不一样，那说明我哪一步写错了——欢迎直接告诉我。
+    </div>
+
+    <div class="article-foot">
+      <a class="btn" href="../index.html#projects">← 回到项目</a>
+      <a class="btn" href="integral-windup.html">下一篇：44% 的超调是怎么来的 →</a>
+      <a class="btn" href="https://github.com/shisisishi/stm32-learning-notes" target="_blank" rel="noopener">仓库源码 ↗</a>
+    </div>
+  </article>
+</div>
+
+<footer>
+  <div class="wrap foot-grid">
+    <div>
+      <div class="zh">王兴领 · 北京交通大学 自动化与智能学院 · 2026 级</div>
+      <div class="en">Wang Xingling · BJTU, School of Automation and Intelligence · Class of 2026</div>
+      <div class="mono" style="margin-top:8px"><span class="zh">本文所有数据来自 <code>code/06-pid-sim</code> 的真实运行输出</span><span class="en">All data from real runs of <code>code/06-pid-sim</code></span></div>
+    </div>
+    <div style="text-align:right"><div class="mono">© <span data-year>2026</span> Wang Xingling</div></div>
+  </div>
+</footer>
+
+<script src="../assets/js/app.js"></script>
+</body>
+</html>

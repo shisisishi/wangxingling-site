@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>王兴领 · 个人主页｜从零自学嵌入式</title>
+<meta name="description" content="王兴领的个人主页：粒子交互、能力自评雷达、作品卡片。北京交通大学自动化类 2026 级，从零自学 STM32 与控制算法。">
+<meta property="og:title" content="王兴领 · 个人主页">
+<meta property="og:description" content="从零自学嵌入式的大一学生：把每个参数都用真实数据讲清楚。">
+<meta property="og:type" content="profile">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/style.css">
+<link rel="stylesheet" href="../assets/css/showcase.css">
+</head>
+<body class="sj">
+
+
+<div class="sj-boot" id="sjBoot" aria-hidden="true">
+  <div class="sj-boot-in">
+    <div class="sj-boot-title">WXL <span>//</span> PERSONAL PAGE</div>
+    <div class="sj-boot-bar"><i id="sjBootBar"></i></div>
+    <div class="sj-boot-log" id="sjBootLog">initializing…</div>
+  </div>
+</div>
+
+
+<div class="sj-progress"><i id="sjProgress"></i></div>
+
+
+<div class="sj-cur-ring" id="sjRing" aria-hidden="true"></div>
+<div class="sj-cur-dot" id="sjDot" aria-hidden="true"></div>
+
+
+<canvas id="sjCanvas" class="sj-canvas" aria-hidden="true"></canvas>
+<div class="sj-aurora" aria-hidden="true"><span></span><span></span><span></span></div>
+
+
+<nav class="sj-nav">
+  <a class="sj-nav-brand" href="#top">
+    <span class="sj-live"></span> WXL<span class="sj-dim">.me</span>
+  </a>
+  <div class="sj-nav-links">
+    <a href="#who"><span class="zh">我是谁</span><span class="en">Who</span></a>
+    <a href="#ability"><span class="zh">能力自评</span><span class="en">Ability</span></a>
+    <a href="#works"><span class="zh">作品</span><span class="en">Works</span></a>
+    <a href="#now"><span class="zh">此刻</span><span class="en">Now</span></a>
+    <a href="#contact"><span class="zh">联系</span><span class="en">Contact</span></a>
+  </div>
+  <a class="sj-nav-back" href="../index.html">
+    <span class="zh">← 招新简历站</span><span class="en">← Résumé site</span>
+  </a>
+  <button class="lang-btn" type="button" aria-label="切换语言 / Switch language">EN</button>
+</nav>
+
+
+<header class="sj-hero" id="top">
+  <div class="sj-hero-inner" id="sjParallax">
+    <div class="sj-tag" data-depth="0.6">
+      <span class="sj-dot-red"></span>
+      <span class="zh">北京交通大学 · 自动化与智能学院 · 2026 级</span>
+      <span class="en">BJTU · School of Automation and Intelligence · Class of 2026</span>
+    </div>
+
+    <h1 data-depth="1.6">
+      <span class="zh">王兴领</span><span class="en">Wang Xingling</span>
+    </h1>
+
+    <div class="sj-type" data-depth="1.1">
+      <span class="sj-type-pre">&gt;</span>
+      <span id="sjType"></span><span class="sj-caret"></span>
+    </div>
+
+    <p class="sj-lede" data-depth="0.8">
+      <span class="zh">一个把学习顺序倒过来的人：<b>先把控制算法在电脑上真跑通、用数据讲清每个参数</b>，再回头逐个打通 STM32 外设与电路。硬件还没到货，所以我先把能在电脑上验证的事做完——并且全部留下可以复现的痕迹。</span>
+      <span class="en">I reordered my own learning path: <b>get the control algorithm genuinely running on a PC and explain every parameter with real data</b>, then work back through the STM32 peripherals and circuits. My board hasn't arrived yet, so I finished everything that can be verified on a computer — and left a reproducible trace for all of it.</span>
+    </p>
+
+    <div class="sj-cta" data-depth="0.5">
+      <a class="sj-btn sj-btn-main" href="#works" data-magnet>
+        <span class="zh">看我的东西</span><span class="en">See my work</span>
+      </a>
+      <a class="sj-btn" href="../index.html" data-magnet>
+        <span class="zh">招新简历站（技能逐条对照）</span><span class="en">Résumé site (skill map)</span>
+      </a>
+      <a class="sj-btn sj-btn-ghost" href="https://github.com/shisisishi" target="_blank" rel="noopener" data-magnet>GitHub ↗</a>
+    </div>
+  </div>
+
+  <div class="sj-scroll-hint" aria-hidden="true">
+    <span class="zh">往下滚</span><span class="en">scroll</span>
+    <i></i>
+  </div>
+</header>
+
+
+<section class="sj-sec" id="who">
+  <div class="sj-sec-head sj-rv">
+    <span class="sj-idx">01</span>
+    <h2><span class="zh">我是谁</span><span class="en">Who I am</span></h2>
+  </div>
+
+  <div class="sj-keys">
+    <article class="sj-key sj-rv" data-spot>
+      <div class="sj-key-no">01</div>
+      <h3><span class="zh">自学型</span><span class="en">Self-taught</span></h3>
+      <p>
+        <span class="zh">入学前只会一点 C，没碰过硬件。我没有等课上学，而是自己排了一条路线：电路基础 → STM32 外设 → 控制算法，按周推进。</span>
+        <span class="en">I arrived with a little C and no hardware. Instead of waiting for a course, I laid out my own route: circuits → STM32 peripherals → control algorithms, advanced weekly.</span>
+      </p>
+    </article>
+    <article class="sj-key sj-rv" data-spot>
+      <div class="sj-key-no">02</div>
+      <h3><span class="zh">数据控</span><span class="en">Data-first</span></h3>
+      <p>
+        <span class="zh">我不满足于「Kp 大了会超调」这种话。我写了一个仿真，扫了 18 组参数，把上升时间、超调、稳态误差全部量化成 CSV——现在我能指着数据说清每一项。</span>
+        <span class="en">“More Kp means more overshoot” isn't enough for me. I wrote a simulation, swept 18 parameter sets, and turned rise time, overshoot and steady-state error into CSV — now I can point at data for every claim.</span>
+      </p>
+    </article>
+    <article class="sj-key sj-rv" data-spot>
+      <div class="sj-key-no">03</div>
+      <h3><span class="zh">不装</span><span class="en">No bluffing</span></h3>
+      <p>
+        <span class="zh">没上过机就写「待上机」，不会 CAN 就写「还没接触」。把不会的写在最显眼的地方，比被面试官问出来强得多。</span>
+        <span class="en">Never touched a board → I write “pending hardware”. Never written CAN → I write “not yet”. Putting the gaps in plain sight beats being caught out by an interviewer.</span>
+      </p>
+    </article>
+  </div>
+</section>
+
+
+<section class="sj-sec" id="ability">
+  <div class="sj-sec-head sj-rv">
+    <span class="sj-idx">02</span>
+    <h2><span class="zh">能力自评</span><span class="en">Self-assessed ability</span></h2>
+    <p class="sj-note">
+      <span class="zh"><b>这是我给自己打的分，不是任何测评成绩</b>；打分依据是「我真的做完过什么」。所以「上机实战」那一项只有 5 分——板子还没到货。</span>
+      <span class="en"><b>These are my own scores, not test results</b>, based on what I have actually finished. That's why “hands-on hardware” sits at 5 — the board hasn't arrived.</span>
+    </p>
+  </div>
+
+  <div class="sj-ability">
+    <div class="sj-radar-wrap sj-rv">
+      <svg class="sj-radar" id="sjRadar" viewBox="-40 -10 420 402" role="img"
+           aria-label="能力自评雷达图"
+           data-labels="C 编程|控制算法|STM32 外设原理|上机实战|电路基础|文档与复现"
+           data-values="65|70|45|5|30|85"></svg>
+      <div class="sj-radar-cap">
+        <span class="zh">拖动鼠标试试，图会跟着动 →</span>
+        <span class="en">Move your mouse — it reacts →</span>
+      </div>
+    </div>
+
+    <div class="sj-bars sj-rv">
+      <div class="sj-bar" data-v="85">
+        <div class="sj-bar-t"><span class="zh">文档与复现习惯</span><span class="en">Documentation &amp; reproducibility</span><b>85</b></div>
+        <div class="sj-bar-l"><i></i></div>
+        <div class="sj-bar-n"><span class="zh">每章都有「复现步骤」，结论标注手册出处（RM0008 等）</span><span class="en">Reproduction steps everywhere; every conclusion cites a manual (RM0008 etc.)</span></div>
+      </div>
+      <div class="sj-bar" data-v="70">
+        <div class="sj-bar-t"><span class="zh">控制算法（PID）</span><span class="en">Control (PID)</span><b>70</b></div>
+        <div class="sj-bar-l"><i></i></div>
+        <div class="sj-bar-n"><span class="zh">能推导位置式/增量式，能解释抗饱和、微分先行、微分滤波；有 18 组真实数据</span><span class="en">Can derive positional/incremental forms; explains anti-windup, derivative-on-measurement and filtering; 18 real data sets</span></div>
+      </div>
+      <div class="sj-bar" data-v="65">
+        <div class="sj-bar-t"><span class="zh">C 语言</span><span class="en">C</span><b>65</b></div>
+        <div class="sj-bar-l"><i></i></div>
+        <div class="sj-bar-n"><span class="zh">结构体、指针、模块分层；能写与硬件解耦、可在 PC 上编译测试的代码</span><span class="en">Structs, pointers, layering; writes hardware-decoupled code that compiles and tests on a PC</span></div>
+      </div>
+      <div class="sj-bar" data-v="45">
+        <div class="sj-bar-t"><span class="zh">STM32 外设原理</span><span class="en">STM32 peripheral theory</span><b>45</b></div>
+        <div class="sj-bar-l"><i></i></div>
+        <div class="sj-bar-n"><span class="zh">时钟树→预分频→ARR/CCR 会算；I²C 时序、ADC 分辨率与参考电压读过手册——<b>但没上机验证</b></span><span class="en">Can compute clock tree → prescaler → ARR/CCR; read up on I²C timing and ADC scaling — <b>but not verified on hardware</b></span></div>
+      </div>
+      <div class="sj-bar" data-v="30">
+        <div class="sj-bar-t"><span class="zh">电路基础</span><span class="en">Circuits</span><b>30</b></div>
+        <div class="sj-bar-l"><i></i></div>
+        <div class="sj-bar-n"><span class="zh">限流电阻、分压、上拉取值、去耦电容——以「手算 + 公式」在整理，未做过 PCB</span><span class="en">Current-limiting resistors, dividers, pull-ups, decoupling — being written up as hand calculations; no PCB work yet</span></div>
+      </div>
+      <div class="sj-bar sj-bar-low" data-v="5">
+        <div class="sj-bar-t"><span class="zh">上机实战</span><span class="en">Hands-on hardware</span><b>5</b></div>
+        <div class="sj-bar-l"><i></i></div>
+        <div class="sj-bar-n"><span class="zh">没烧录过、没量过波形、没接过面包板。<b>硬件到货当天开始补</b></span><span class="en">No flashing, no scope traces, no breadboarding. <b>Starts the day the board arrives</b></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="sj-sec" id="works">
+  <div class="sj-sec-head sj-rv">
+    <span class="sj-idx">03</span>
+    <h2><span class="zh">我做出来的东西</span><span class="en">Things I've built</span></h2>
+    <p class="sj-note">
+      <span class="zh">四张卡片，每张都能点开验证。鼠标移上去有光。</span>
+      <span class="en">Four cards, each one verifiable. Hover for the spotlight.</span>
+    </p>
+  </div>
+
+  <div class="sj-works">
+    <a class="sj-work sj-rv" href="../index.html#projects" data-spot data-tilt>
+      <div class="sj-work-top"><span class="sj-work-tag">C · gcc</span><span class="sj-work-arrow">↗</span></div>
+      <h3><span class="zh">PID 仿真与参数整定</span><span class="en">PID simulation &amp; tuning</span></h3>
+      <p><span class="zh">脱离硬件的直流电机 + PID 控制器，一次跑 18 组参数，输出真实 CSV 与曲线。</span><span class="en">A hardware-free DC motor + PID controller; one run yields 18 parameter cases with real CSVs and charts.</span></p>
+      <div class="sj-work-kv"><span>18 <span class="zh">组数据</span><span class="en">cases</span></span><span>5 <span class="zh">张曲线</span><span class="en">charts</span></span><span>44.04% ↔ 1.09%</span></div>
+    </a>
+
+    <a class="sj-work sj-rv" href="../posts/integral-windup.html" data-spot data-tilt>
+      <div class="sj-work-top"><span class="sj-work-tag"><span class="zh">实验记录</span><span class="en">Lab note</span></span><span class="sj-work-arrow">↗</span></div>
+      <h3><span class="zh">44% 的超调是怎么来的</span><span class="en">Where 44% overshoot comes from</span></h3>
+      <p><span class="zh">同一组参数，只差两行积分限幅代码：超调 44.04% 对 1.09%，控制量被顶在 12 V 上 77 ms。</span><span class="en">Same gains, two lines of integral clamping apart: 44.04% vs 1.09% overshoot, pinned at 12 V for 77 ms.</span></p>
+      <div class="sj-work-kv"><span>Kp=1 / Ki=50</span><span>77 ms ↔ 39 ms</span></div>
+    </a>
+
+    <a class="sj-work sj-rv" href="https://github.com/shisisishi/debate-notes" target="_blank" rel="noopener" data-spot data-tilt>
+      <div class="sj-work-top"><span class="sj-work-tag">Electron · React · SQLite</span><span class="sj-work-arrow">↗</span></div>
+      <h3><span class="zh">辩手手记 debate-notes</span><span class="en">debate-notes</span></h3>
+      <p><span class="zh">离线优先的辩论赛记录桌面应用，自己写完数据模型到界面，含端到端测试。已公开，2 ★。</span><span class="en">An offline-first desktop app for debating records — data model to UI, with end-to-end tests. Public, 2 ★.</span></p>
+      <div class="sj-work-kv"><span>2 ★</span><span><span class="zh">已公开</span><span class="en">public</span></span></div>
+    </a>
+
+    <a class="sj-work sj-rv" href="../index.html" data-spot data-tilt>
+      <div class="sj-work-top"><span class="sj-work-tag">HTML · CSS · JS</span><span class="sj-work-arrow">↗</span></div>
+      <h3><span class="zh">这个网站本身</span><span class="en">This website</span></h3>
+      <p><span class="zh">零依赖、无构建步骤的静态站：粒子背景、自定义光标、滚动动效、中英切换都是手写的；曲线由真实数据生成。</span><span class="en">A zero-dependency static site: particle background, custom cursor, scroll motion and bilingual toggle all hand-written; charts generated from real data.</span></p>
+      <div class="sj-work-kv"><span>0 <span class="zh">依赖</span><span class="en">deps</span></span><span><span class="zh">1 条命令部署</span><span class="en">1-command deploy</span></span></div>
+    </a>
+  </div>
+</section>
+
+
+<section class="sj-sec sj-sec-nums">
+  <div class="sj-nums sj-rv">
+    <div class="sj-num"><b data-count="18">0</b><span class="zh">组参数对照仿真</span><span class="en">parameter cases</span></div>
+    <div class="sj-num"><b data-count="5">0</b><span class="zh">张真实数据曲线</span><span class="en">real-data charts</span></div>
+    <div class="sj-num"><b data-count="3">0</b><span class="zh">篇实验记录</span><span class="en">lab write-ups</span></div>
+    <div class="sj-num"><b data-count="44" data-suffix="%">0</b><span class="zh">最夸张的超调（已修）</span><span class="en">worst overshoot (fixed)</span></div>
+    <div class="sj-num"><b data-count="2">0</b><span class="zh">个公开项目</span><span class="en">public projects</span></div>
+  </div>
+</section>
+
+
+<section class="sj-sec" id="now">
+  <div class="sj-sec-head sj-rv">
+    <span class="sj-idx">04</span>
+    <h2><span class="zh">此刻在做什么</span><span class="en">What I'm doing right now</span></h2>
+  </div>
+  <div class="sj-timeline">
+    <div class="sj-tl sj-rv">
+      <span class="sj-tl-dot done"></span>
+      <div class="sj-tl-body">
+        <div class="sj-tl-when">2026.09 · <span class="zh">已完成</span><span class="en">done</span></div>
+        <h4><span class="zh">把 PID 用真实数据讲清楚</span><span class="en">PID, explained with real data</span></h4>
+        <p><span class="zh">写仿真、扫参数、出曲线、写三篇记录，并把原始 CSV 一起公开。</span><span class="en">Wrote the simulation, swept parameters, produced the charts, published three write-ups plus the raw CSVs.</span></p>
+      </div>
+    </div>
+    <div class="sj-tl sj-rv">
+      <span class="sj-tl-dot now"></span>
+      <div class="sj-tl-body">
+        <div class="sj-tl-when">2026.09–10 · <span class="zh">进行中</span><span class="en">in progress</span></div>
+        <h4><span class="zh">等硬件 + 清磁盘 + 搭工具链</span><span class="en">Waiting on hardware, freeing disk, setting up tools</span></h4>
+        <p><span class="zh">按清单采购（约 ¥70）；C 盘只剩 3 GB，正在清理以便装 CubeMX + Keil。</span><span class="en">Buying the parts (~¥70); only 3 GB left on C:, clearing space for CubeMX + Keil.</span></p>
+      </div>
+    </div>
+    <div class="sj-tl sj-rv">
+      <span class="sj-tl-dot"></span>
+      <div class="sj-tl-body">
+        <div class="sj-tl-when">2026.10–12 · <span class="zh">计划</span><span class="en">planned</span></div>
+        <h4><span class="zh">外设逐章上机 → CAN 电机 → 底盘功率控制</span><span class="en">Peripherals on hardware → CAN motors → power control</span></h4>
+        <p><span class="zh">每章补真机波形；然后是 CAN、电流环与功率闭环，再画第一块 PCB 去打样。</span><span class="en">Real waveform per chapter, then CAN, current loop and a power loop, then route a first PCB.</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="sj-sec sj-sec-contact" id="contact">
+  <div class="sj-contact sj-rv">
+    <h2>
+      <span class="zh">想问我点什么都行</span><span class="en">Ask me anything</span>
+    </h2>
+    <p>
+      <span class="zh">我不怕被问不会的东西——「不会，但我打算这样学」是我准备得最熟的一句话。</span>
+      <span class="en">I'm not afraid of questions I can't answer — “not yet, and here's how I'd learn it” is the line I've rehearsed most.</span>
+    </p>
+    <div class="sj-cta sj-cta-center">
+      <a href="https://github.com/shisisishi" target="_blank" rel="noopener">GitHub · @shisisishi</a>
+      <a class="sj-btn" href="https://github.com/shisisishi" target="_blank" rel="noopener" data-magnet>github.com/shisisishi ↗</a>
+      <span>公开版不提供含联系方式的 PDF / Public edition</span>
+    </div>
+    <div class="sj-easter">
+      <span class="zh">（彩蛋：双击页面任意处，粒子会炸一下）</span>
+      <span class="en">(Easter egg: double-click anywhere and the particles burst)</span>
+    </div>
+  </div>
+</section>
+
+<footer class="sj-foot">
+  <div>
+    <span class="zh">王兴领 · 北京交通大学 自动化与智能学院 · 2026 级</span>
+    <span class="en">Wang Xingling · BJTU · Class of 2026</span>
+  </div>
+  <div class="sj-foot-r">
+    <a href="../index.html"><span class="zh">招新简历站</span><span class="en">Résumé site</span></a>
+    <span class="sj-dim">© <span data-year>2026</span> WXL</span>
+  </div>
+</footer>
+
+<script src="../assets/js/app.js"></script>
+<script src="../assets/js/showcase.js"></script>
+</body>
+</html>

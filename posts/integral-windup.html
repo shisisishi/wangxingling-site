@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>44% 的超调是怎么来的：积分饱和与抗饱和｜王兴领</title>
+<meta name="description" content="同一组 PID 参数，只差一行积分限幅代码：超调 44.04% 对比 1.09%，调节时间 139ms 对比 39ms。用真实仿真数据讲清积分饱和的机理。">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="../index.html">
+      <span class="dot"></span>
+      <span class="zh">王兴领 <small>· WXL</small></span>
+      <span class="en">Wang Xingling <small>· WXL</small></span>
+    </a>
+    <div class="nav-links">
+      <a href="../index.html#skills"><span class="zh">技能对照</span><span class="en">Skill map</span></a>
+      <a href="../index.html#projects"><span class="zh">项目</span><span class="en">Projects</span></a>
+      <a href="../index.html#posts"><span class="zh">全部文章</span><span class="en">All writing</span></a>
+      <a href="../resume.html"><span class="zh">简历</span><span class="en">Résumé</span></a>
+    </div>
+    <button class="lang-btn" type="button" aria-label="切换语言 / Switch language">EN</button>
+  </div>
+</nav>
+
+<div class="wrap crumb">
+  <a href="../index.html">首页</a> / <a href="../index.html#posts">文章</a> / PID 02
+</div>
+
+<div class="wrap">
+  <header class="article-head">
+    <span class="kicker">控制算法 · 实验记录</span>
+    <h1>44% 的超调是怎么来的：积分饱和与抗饱和</h1>
+    <div class="article-meta">
+      <span>2026-09-16</span><span>·</span><span>约 8 分钟</span><span>·</span>
+      <span>Kp=1 / Ki=50 · 唯一变量：积分限幅</span><span>·</span><span>code/06-pid-sim</span>
+    </div>
+  </header>
+
+  <div class="callout en" style="margin-top:22px">
+    <span class="t">Note</span>
+    This write-up is in Chinese; the charts, code and data are language-neutral. Happy to explain any part in English.
+  </div>
+
+  <article class="article-body">
+    <p>
+      这是我在整个 PID 仿真里最意外的一组数据。两组参数<strong>完全相同</strong>——Kp=1、Ki=50、同一个电机模型、同一个 12 V 限幅——唯一的差别是：一组打开了「积分限幅」，一组把上限设成了 <code>1e9</code>（等于关闭）。
+    </p>
+    <p>
+      结果：一组的超调是 <strong>1.09%</strong>，另一组是 <strong>44.04%</strong>。<strong>差了 40 倍。</strong>
+    </p>
+
+    <div class="table-scroll">
+      <table>
+        <thead><tr>
+          <th>场景</th><th>积分限幅 i_max</th><th>峰值转速</th><th>超调</th><th>输出饱和时长</th><th>调节时间</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td><code>windup_off</code></td>
+            <td>1e9（相当于关闭）</td>
+            <td><strong>288.08</strong> rad/s</td>
+            <td><strong>44.04%</strong></td>
+            <td>77 ms</td>
+            <td>139 ms</td>
+          </tr>
+          <tr>
+            <td><code>windup_on</code></td>
+            <td>8.0 V</td>
+            <td>202.19 rad/s</td>
+            <td><strong>1.09%</strong></td>
+            <td>39 ms</td>
+            <td>39 ms</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:14.6px;color:var(--muted)">目标转速 200 rad/s。数据来自 <code>data/metrics.csv</code> 与 <code>data/windup_off.csv</code> / <code>data/windup_on.csv</code>。</p>
+
+    <figure>
+      <div class="chart-frame">
+        <img src="../assets/img/chart-windup.svg" alt="积分饱和对比：无抗饱和超调 44.04%，有抗饱和 1.09%">
+      </div>
+      <figcaption><b>图 1 · 转速响应。</b>红色那条冲过目标值 88 rad/s 才停下；青色那条几乎贴着目标值停住。</figcaption>
+    </figure>
+
+    <h2>一、先看控制量，才知道转速为什么冲那么高</h2>
+    <p>
+      只看转速曲线，很容易以为是「增益太大」。但把同时刻的<strong>控制量 u(t)</strong> 画出来，原因就一目了然了：
+    </p>
+    <figure>
+      <div class="chart-frame">
+        <img src="../assets/img/chart-control-effort.svg" alt="控制量 u(t) 对比：无抗饱和组被顶在 12V 上 77ms">
+      </div>
+      <figcaption><b>图 2 · 控制量 u(t)。</b>无抗饱和组在启动后整整 77 ms 都被压在 ±12 V 的输出上限上；有抗饱和组只有 39 ms。</figcaption>
+    </figure>
+    <p>
+      把三件事按时间排起来，机理就完整了：
+    </p>
+    <ol>
+      <li><strong>t = 0</strong>：误差 200 rad/s，比例项瞬间就是 200 V（Kp=1），远超 12 V 上限 → 控制量被限幅顶死在 12 V。</li>
+      <li><strong>0 ~ 77 ms</strong>：电机在这个电压下全力加速。注意——<strong>这期间转速还没到 200，误差一直是正的，所以积分项一直在往同方向累加。</strong>它不知道输出已经顶到天花板了。</li>
+      <li><strong>t ≈ 78 ms</strong>：转速冲到峰值 <strong>288 rad/s</strong>，这时误差已经反向（−88 rad/s），积分项才开始往下扣。</li>
+      <li><strong>78 ~ 139 ms</strong>：控制量必须先把那个「超额累加的积分」还清，才谈得上把转速拉回来。这 61 ms 就是纯浪费。</li>
+    </ol>
+    <div class="callout bad">
+      <span class="t">积分项在启动阶段能攒到多大？</span>
+      积分项的增长速率是 <code>Ki · |e|</code>。启动瞬间 e = 200 rad/s、Ki = 50，也就是 <strong>10 000 V/s</strong>。哪怕只有几十毫秒同方向，也能攒到几百伏的量级——而输出电压上限只有 12 V。<strong>这就是「饱和」：积分项累加到了一个输出永远无法表达的数值。</strong>
+    </div>
+
+    <h2>二、抗饱和做的是什么</h2>
+    <p>
+      最朴素、也最常用的做法就是<strong>给积分项单独加一个上限</strong>。看代码（<code>pid.c</code>）：
+    </p>
+    <pre><span class="c">/* ---------- 积分项 I ---------- */</span>
+<span class="c">/* 写成 ki·error·dt 累加，这样 ki 的量纲是 1/s，换采样率不用重调参数 */</span>
+pid-&gt;integral += pid-&gt;ki * error * dt;
+
+<span class="c">/* 积分限幅：最朴素的抗饱和 */</span>
+<span class="k">if</span> (pid-&gt;integral &gt;  pid-&gt;i_max) pid-&gt;integral =  pid-&gt;i_max;
+<span class="k">if</span> (pid-&gt;integral &lt; -pid-&gt;i_max) pid-&gt;integral = -pid-&gt;i_max;</pre>
+    <p>
+      就这两行。本组实验里 <code>i_max = 8.0</code>（V），因为输出电压上限是 12 V，把积分项限制在同一个量级再收一收，避免它单独就把输出打满。
+    </p>
+    <p>
+      效果直接体现在前面两个数字上：<strong>饱和时长从 77 ms 降到 39 ms，峰值从 288 降到 202</strong>。它的原理是——一旦积分项攒到了 8 V，再攒也没有意义了（输出反正已经满了），所以干脆不让它继续攒。等误差反向时，需要「还」的债只有 8 V 而不是几百伏，于是超调就被控制住了。
+    </p>
+
+    <h2>三、还有一个前提条件值得单独说</h2>
+    <p>
+      如果没有输出限幅，这个实验根本不会出现 44% 的超调——因为控制量可以给到 200 V，误差瞬间就被打没了，积分项也来不及攒。
+      <strong>积分饱和是「输出限幅」和「积分作用」两个东西同时存在才会出现的问题。</strong>
+    </p>
+    <p>
+      而真实系统里输出限幅是<strong>必然存在</strong>的：PWM 占空比只能在 0~100%，电源电压只有 24 V，电机电流有上限，底盘功率还有裁判系统给的功率上限。所以抗饱和不是「优化项」，是工程上的标配。
+    </p>
+    <div class="callout">
+      <span class="t">这也解释了为什么「底盘功率控制」值得认真做</span>
+      功率上限本质上就是一种输出限幅。只要有「执行器给不出你想要的量」+「积分还在同方向累加」这两个条件，饱和就会发生。反过来，如果能在接近上限时提前把积分的增长放慢（而不是简单截断），恢复会更平滑——这类方法统称 anti-windup，我这个仿真里实现的是最简单的一种（截断式）。
+    </div>
+
+    <h2>四、复现方式</h2>
+    <pre>git clone https://github.com/shisisishi/stm32-learning-notes
+cd stm32-learning-notes/code/06-pid-sim
+gcc -O2 -std=c99 -Wall -Wextra -o pidsim sim.c pid.c plant.c -lm
+./pidsim
+
+<span class="c"># 核对 data/metrics.csv：</span>
+<span class="c">#   windup_off  这一行 → overshoot_pct = 44.040 , settle_time_s = 0.139</span>
+<span class="c">#   windup_on   这一行 → overshoot_pct =  1.094 , settle_time_s = 0.039</span></pre>
+    <p>
+      两组场景在 <code>sim.c</code> 的 <code>CASES[]</code> 里只差两个字段：<code>i_max</code>（1e9 对 8.0）和 <code>use_ilimit</code>（0 对 1）。
+    </p>
+
+    <div class="article-foot">
+      <a class="btn" href="pid-three-terms.html">← 上一篇：PID 三项各自在干什么</a>
+      <a class="btn" href="why-f103-not-f407.html">下一篇：为什么先学 F103 而不是 F407 →</a>
+      <a class="btn" href="https://github.com/shisisishi/stm32-learning-notes" target="_blank" rel="noopener">仓库源码 ↗</a>
+    </div>
+  </article>
+</div>
+
+<footer>
+  <div class="wrap foot-grid">
+    <div>
+      <div class="zh">王兴领 · 北京交通大学 自动化与智能学院 · 2026 级</div>
+      <div class="en">Wang Xingling · BJTU, School of Automation and Intelligence · Class of 2026</div>
+      <div class="mono" style="margin-top:8px">本文所有数据来自 <code>code/06-pid-sim</code> 的真实运行输出</div>
+    </div>
+    <div style="text-align:right"><div class="mono">© <span data-year>2026</span> Wang Xingling</div></div>
+  </div>
+</footer>
+
+<script src="../assets/js/app.js"></script>
+</body>
+</html>

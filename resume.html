@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>王兴领 · 简历（可打印）</title>
+<meta name="description" content="王兴领的简历：北京交通大学自动化类 2026 级，申请 BNGU 战队电控组 / 电路组。">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="resume-page">
+
+<div class="resume-toolbar">
+  <div class="wrap">
+    <a class="brand" href="index.html" style="color:#e6edf3">
+      <span class="dot"></span> <span>王兴领 · 简历</span>
+    </a>
+    <span class="hint">按 <b>Ctrl+P</b>（Mac 是 ⌘P）→ 目标选「另存为 PDF」→ 纸张 A4、边距「默认」、勾选「背景图形」即可导出；也可以直接下已经排好的一页版。</span>
+    <span>公开版不提供含联系方式的 PDF / Public edition</span>
+    <button class="btn" type="button" onclick="window.print()">打印 / 导出 PDF</button>
+    <a class="btn" href="index.html">返回主页</a>
+  </div>
+</div>
+
+<div class="sheet">
+
+  
+  <h1>王兴领 <span style="font-size:13pt;font-weight:400;color:#5d6b7a">Wang Xingling</span></h1>
+  <div class="rl">北京交通大学 · 自动化与智能学院 · 自动化类 · 2026 级（大一）</div>
+  <div class="rl">
+    申请方向：<b>BNGU 战队（RoboMaster）电控组 · 电路组</b> &nbsp;|&nbsp;
+    <a href="https://github.com/shisisishi" target="_blank" rel="noopener">GitHub · @shisisishi</a> &nbsp;|&nbsp;
+    <a href="https://github.com/shisisishi">github.com/shisisishi</a> &nbsp;|&nbsp;
+    <a href="https://wangxingling.netlify.app">wangxingling.netlify.app</a>
+  </div>
+
+  <div class="rule"></div>
+
+  
+  <h2>教育背景 <span class="en">Education</span></h2>
+  <h3>北京交通大学 · 自动化与智能学院 · 自动化类<span class="when">2026.09 – 至今</span></h3>
+  <ul>
+    <li>大一在读，专业方向为自动化；入学前仅有少量 C 语言基础，无硬件经验。</li>
+    <li>自学主线：<b>电路基础 → STM32 外设 → 控制算法</b>，按周推进并留下可复现的实验记录。</li>
+  </ul>
+
+  
+  <h2>技术能力 <span class="en">Skills</span></h2>
+  <div class="two">
+    <ul>
+      <li><b>C 语言</b>：结构体 / 指针 / 模块化分层，能写与硬件解耦、可在 PC 上编译测试的嵌入式代码。</li>
+      <li><b>控制算法</b>：位置式 PID 推导与实现；输出限幅、积分抗饱和、微分先行、微分一阶低通。</li>
+      <li><b>实验方法</b>：控制变量法设计参数扫描实验，用脚本生成 CSV 与曲线，结论全部可复现。</li>
+    </ul>
+    <ul>
+      <li><b>TypeScript / React / Electron / SQLite</b>：独立完成桌面应用（含端到端测试）。</li>
+      <li><b>工具链</b>：gcc / w64devkit（本机真实编译）；CubeMX + Keil 待安装（磁盘清理中）。</li>
+      <li><b>学习习惯</b>：结论必须标注手册出处（RM0008、SSD1306 手册等）；不确定的写「待验证」。</li>
+    </ul>
+  </div>
+
+  
+  <h2>项目经历 <span class="en">Projects</span></h2>
+
+  <h3>STM32 学习笔记 · 从零开始的嵌入式入门（个人项目）<span class="when">2026.09 – 至今</span></h3>
+  <div class="rl" style="margin-bottom:3px">github.com/shisisishi/stm32-learning-notes · C / gcc</div>
+  <ul>
+    <li>设计「电控 + 电路」双线学习路线（11 章）：电控线覆盖 GPIO → 定时器/PWM → 串口 → I²C → ADC → 通信协议 → PID 闭环；电路线覆盖限流分压 → 去耦与电源完整性 → 原理图 → PCB。</li>
+    <li>独立编写<b>脱离硬件的直流电机 + PID 仿真</b>（电枢电气模型 + 机械模型，前向欧拉离散化，物理步长 20 µs / 控制周期 1 ms），一次运行输出 <b>18 组参数对照</b>的指标 CSV 与逐时刻波形 CSV。</li>
+    <li>用该仿真量化验证了 PID 各参数的作用，例如：Kp 从 0.3 增至 8 时稳态误差由 19.20 降至 1.21 rad/s 但上升时间在 32 ms 处不再改善（受 12 V 电源限幅约束）；Kp=1/Ki=50 时<b>关闭积分限幅会使超调由 1.09% 恶化到 44.04%</b>；噪声下 Kd=0.001 使输出抖动由 1.69 V 放大至 4.73 V，加 τ=10 ms 一阶低通后回到 1.88 V。</li>
+    <li>把结论写成 3 篇实验记录并公开原始 CSV，附带一条命令可复现的验证步骤。</li>
+    <li><b>当前状态</b>：硬件尚未到货，所有结论限定在「PC 上真实运行」范围内；上机实验列为下一阶段计划（外设逐章上机 → CAN 电机 → 底盘功率控制）。</li>
+  </ul>
+
+  <h3>辩手手记 debate-notes · 离线优先的辩论赛记录桌面应用（个人项目）<span class="when">已公开 · 2 ★</span></h3>
+  <div class="rl" style="margin-bottom:3px">github.com/shisisishi/debate-notes · Electron + React + TypeScript + SQLite</div>
+  <ul>
+    <li>独立完成数据模型、界面与打包：赛制、辩位、评委、票数与复盘笔记全部存于本地 SQLite，无需联网与注册。</li>
+    <li>用端到端测试保护核心流程，形成「先定 schema 再写界面」的开发习惯。</li>
+  </ul>
+
+  
+  <h2>自我评估与待补项 <span class="en">Self-assessment</span></h2>
+  <div class="honest">
+    <b>已具备</b>：C 语言工程能力、PID 参数作用的量化理解（有真实数据）、可复现的实验与文档习惯、完整软件项目的交付经验。<br>
+    <b>待补（尚无经验，已列计划）</b>：① STM32 上机经验（未烧录过、未测过波形，硬件采购中）；② CAN 总线与 M3508/M2006 电机控制；③ 底盘功率控制；④ PCB 布线 / 打样 / 焊接；⑤ FreeRTOS 与串级 PID。<br>
+    <b>我的态度</b>：不会的就写不会，但每一项都有明确的第一步。愿意从焊接、测数据、整理文档这类基础工作做起。
+  </div>
+
+  
+  <h2>其他 <span class="en">Other</span></h2>
+  <ul>
+    <li>兴趣：辩论（因此写了上面那个记录工具）、嵌入式硬件。</li>
+    <li>学习方法：把每个现象背后的公式先算清楚，再动手；踩过的坑单独记录，不删。</li>
+  </ul>
+
+  <div class="rule"></div>
+  <div style="font-size:9pt;color:#6a7887">
+    注：本简历中所有性能数字均来自 <code>code/06-pid-sim</code> 在本机（gcc 16.2）的真实运行输出，原始数据已在 GitHub 仓库公开。
+  </div>
+</div>
+
+</body>
+</html>

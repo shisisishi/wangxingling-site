@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>王兴领 · STM32 学习笔记与实验记录｜申请 BNGU 电控组 / 电路组</title>
+<meta name="description" content="北京交通大学自动化类 2026 级。自学嵌入式：PID 仿真与真实参数对照数据、STM32 外设学习路线、可复现实验步骤。申请 BNGU 战队（RoboMaster）电控组 / 电路组。">
+<meta name="author" content="王兴领">
+<meta property="og:title" content="王兴领 · STM32 学习笔记与实验记录">
+<meta property="og:description" content="每个参数都用真实数据讲清楚：18 组 PID 参数对照仿真 + 可 10 分钟复现的实验步骤。">
+<meta property="og:type" content="website">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+
+<nav class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top">
+      <span class="dot"></span>
+      <span class="zh">王兴领 <small>· WXL</small></span>
+      <span class="en">Wang Xingling <small>· WXL</small></span>
+    </a>
+    <div class="nav-links">
+      <a href="#skills"><span class="zh">技能对照</span><span class="en">Skill map</span></a>
+      <a href="#projects"><span class="zh">项目</span><span class="en">Projects</span></a>
+      <a href="#roadmap"><span class="zh">学习路线</span><span class="en">Roadmap</span></a>
+      <a href="#posts"><span class="zh">文章</span><span class="en">Writing</span></a>
+      <a href="#reproduce"><span class="zh">硬件与复现</span><span class="en">Hardware</span></a>
+      <a href="#gaps"><span class="zh">短板</span><span class="en">Gaps</span></a>
+      <a href="#about"><span class="zh">关于</span><span class="en">About</span></a>
+      <a href="me/"><span class="zh">个人主页</span><span class="en">Showcase</span></a>
+      <a href="resume.html"><span class="zh">简历</span><span class="en">Résumé</span></a>
+    </div>
+    <button class="lang-btn" type="button" aria-label="切换语言 / Switch language">EN</button>
+  </div>
+</nav>
+
+
+<header class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="kicker">
+        <span class="zh">申请 · BNGU 战队（RoboMaster）电控组 / 电路组</span>
+        <span class="en">Applying · BNGU RoboMaster Team — Control &amp; Electronics</span>
+      </span>
+
+      <h1>
+        <span class="zh">王兴领</span><span class="en">Wang Xingling</span><br>
+        <span class="accent zh">从零自学嵌入式</span>
+        <span class="accent en">Embedded, from zero</span>
+      </h1>
+
+      <p class="hero-role">
+        <span class="zh">北京交通大学</span><span class="en">Beijing Jiaotong University</span>
+        <span class="sep">/</span>
+        <span class="zh">自动化与智能学院 · 自动化类 · 2026 级</span>
+        <span class="en">School of Automation and Intelligence · Class of 2026</span>
+      </p>
+
+      <p class="lede">
+        <span class="zh">我的起点是：<strong>一点 C 语言基础，没碰过硬件</strong>。所以我把学习顺序倒过来——<span class="hl">先把控制算法在电脑上真跑通、把每个参数的作用用数据讲清楚</span>，再按路线图逐个打通 STM32 外设与电路，每一步都留下可以复现的痕迹。</span>
+        <span class="en">I started with <strong>a bit of C and no hardware at all</strong>. So I reordered the learning path: <span class="hl">get the control algorithm genuinely running on a PC first, and explain what each parameter really does with real data</span> — then work through the STM32 peripherals and circuits one by one, leaving a reproducible trace at every step.</span>
+      </p>
+      <p class="lede" style="font-size:16.5px">
+        <span class="zh">这个站点里 <strong>5 张曲线全部来自仓库里 <code>code/06-pid-sim</code> 的真实运行输出</strong>，原始 CSV 一起放在仓库里，你可以下载核对，也可以用一条命令自己重跑一遍。</span>
+        <span class="en">Every one of the <strong>5 charts here comes from an actual run of <code>code/06-pid-sim</code></strong>; the raw CSVs ship with the repo so you can check them — or re-run everything with a single command.</span>
+      </p>
+
+      <div class="target">
+        <span class="chip red"><span class="zh">目标方向</span><span class="en">Target</span>：<span class="zh">电控（控制 / 软件）</span><span class="en">Control (software)</span></span>
+        <span class="chip red">＋</span>
+        <span class="chip red"><span class="zh">电路（硬件）</span><span class="en">Electronics (hardware)</span></span>
+        <span class="chip cyan">C / C++</span>
+        <span class="chip cyan">TypeScript · React · Electron</span>
+        <span class="chip amber"><span class="zh">PID 参数整定（有真实数据）</span><span class="en">PID tuning (with real data)</span></span>
+        <span class="chip gray"><span class="zh">STM32 外设·进行中</span><span class="en">STM32 peripherals · in progress</span></span>
+      </div>
+
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#skills">
+          <span class="zh">看技能逐条对照</span><span class="en">Skill-by-skill map</span> ↓
+        </a>
+        <a class="btn" href="https://github.com/shisisishi" target="_blank" rel="noopener">GitHub · @shisisishi</a>
+        <a href="https://github.com/shisisishi" target="_blank" rel="noopener">GitHub · @shisisishi</a>
+        <a class="btn" href="resume.html">
+          <span class="zh">简历（可打印 PDF）</span><span class="en">Résumé (print to PDF)</span>
+        </a>
+        <a class="btn" href="me/">
+          <span class="zh">个人主页（动效版）</span><span class="en">Showcase page</span> ✨
+        </a>
+      </div>
+    </div>
+
+    
+    <div class="hero-side">
+      <div class="avatar-card">
+        <div class="avatar">
+          
+          <img src="assets/img/avatar-placeholder.svg" alt="头像占位符 / photo placeholder">
+        </div>
+        <div class="who"><span class="zh">王兴领</span><span class="en">Wang Xingling</span></div>
+        <div class="where"><span class="zh">北京交通大学 · 自动化类</span><span class="en">BJTU · Automation</span></div>
+        <div class="avatar-note" style="margin-top:10px">
+          <span class="zh">姓名占位图（非真人照片）</span><span class="en">(photo: placeholder)</span>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="n">18<small> <span class="zh">组</span><span class="en">sets</span></small></div>
+          <div class="l"><span class="zh">PID 参数对照仿真（真实输出）</span><span class="en">PID parameter sweeps (real output)</span></div>
+        </div>
+        <div class="stat">
+          <div class="n">11<small> <span class="zh">章</span><span class="en">ch.</span></small></div>
+          <div class="l"><span class="zh">电控 + 电路双线学习路线</span><span class="en">Dual-track learning roadmap</span></div>
+        </div>
+        <div class="stat">
+          <div class="n">2<small>★</small></div>
+          <div class="l"><span class="zh">已公开项目 debate-notes</span><span class="en">Public project: debate-notes</span></div>
+        </div>
+        <div class="stat">
+          <div class="n">1<small> <span class="zh">条命令</span><span class="en">command</span></small></div>
+          <div class="l"><span class="zh">复现全部曲线</span><span class="en">to reproduce every chart</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="truth reveal">
+      <div class="t-icon">⚠️</div>
+      <div>
+        <h3><span class="zh">关于真实性：我把边界写在这里</span><span class="en">On honesty: here is exactly where the line is</span></h3>
+        <p>
+          <span class="zh">我的硬件（STM32F103C8T6 最小系统板 + ST-Link，全套预算约 ¥70）<strong>目前还没到货</strong>。所以这个站和仓库里所有 STM32 内容都以「<strong>能在电脑上真实运行的</strong>」为边界：跑得起来的我跑给你看（PID 仿真、18 组参数扫参、原始 CSV、5 张曲线）；还没上机的部分我会明确写「<strong>待上机</strong>」，不会写「已烧录」——因为写上去的东西，面试时是要被追问的。硬件到货后的上机记录会补到对应章节。</span>
+          <span class="en">My board (STM32F103C8T6 + ST-Link, ~¥70 total) <strong>has not arrived yet</strong>. So everything about STM32 on this site stays inside the boundary of <strong>what actually runs on a PC</strong>: the PID simulation, 18 parameter sweeps, raw CSVs and all 5 charts are real and reproducible. Anything that needs the board is explicitly marked <strong>“pending hardware”</strong> — never “flashed and verified”. Post-hardware lab records will be appended to each chapter.</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<hr class="split">
+
+
+<section id="facts">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-idx">00 / QUICK FACTS</span>
+      <h2><span class="zh">一眼看完</span><span class="en">At a glance</span></h2>
+    </div>
+    <dl class="facts reveal">
+      <div class="fact"><dt><span class="zh">学校 / 学院</span><span class="en">University</span></dt>
+        <dd><span class="zh">北京交通大学 · 自动化与智能学院</span><span class="en">Beijing Jiaotong University · School of Automation and Intelligence</span></dd></div>
+      <div class="fact"><dt><span class="zh">专业 / 年级</span><span class="en">Major / Year</span></dt>
+        <dd><span class="zh">自动化类 · 2026 级（大一）</span><span class="en">Automation · Class of 2026 (freshman)</span></dd></div>
+      <div class="fact"><dt><span class="zh">申请方向</span><span class="en">Applying for</span></dt>
+        <dd><span class="zh">BNGU 战队 · 电控组（控制）+ 电路组（硬件）</span><span class="en">BNGU RoboMaster · Control + Electronics</span></dd></div>
+      <div class="fact"><dt><span class="zh">现有硬件</span><span class="en">Hardware on hand</span></dt>
+        <dd><span class="zh">暂无（已列清单与预算，待采购）</span><span class="en">None yet (BOM &amp; budget prepared)</span></dd></div>
+      <div class="fact"><dt><span class="zh">能立刻演示的</span><span class="en">Demoable right now</span></dt>
+        <dd><span class="zh">PID 仿真：18 组参数对照，一条命令复现</span><span class="en">PID simulation: 18 sweep cases, one-command rerun</span></dd></div>
+      <div class="fact"><dt><span class="zh">编程语言</span><span class="en">Languages</span></dt>
+        <dd>C（HAL 风格嵌入式代码）· TypeScript / React</dd></div>
+      <div class="fact"><dt><span class="zh">公开联系</span><span class="en">Public contact</span></dt>
+        <dd><a href="https://github.com/shisisishi" target="_blank" rel="noopener">GitHub · @shisisishi</a></dd></div>
+      <div class="fact"><dt><span class="zh">GitHub</span><span class="en">GitHub</span></dt>
+        <dd><a href="https://github.com/shisisishi" target="_blank" rel="noopener">@shisisishi</a></dd></div>
+    </dl>
+  </div>
+</section>
+
+<hr class="split">
+
+
+<section id="skills">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-idx">01 / SKILL MAP</span>
+      <h2><span class="zh">招新海报每一条要求 → 我的现状</span><span class="en">Every line of the recruitment poster → where I actually stand</span></h2>
+      <p>
+        <span class="zh">这张表是我把招新海报上的要求逐条拆开、逐条对照自己的结果。<strong>没做到的我就写「待补」</strong>，并写清打算怎么补——因为把它藏起来，面试时只会更难看。</span>
+        <span class="en">I pulled apart the recruitment poster line by line and mapped each requirement to my actual state. <strong>What I can't do yet says “to be filled”</strong>, together with my plan for it — hiding it would only look worse in an interview.</span>
+      </p>
+    </div>
+
+    
+    <div class="track-title reveal">
+      <span class="tag tag-red"><span class="zh">方向 A</span><span class="en">Track A</span></span>
+      <span class="zh">电控组 · 控制 / 软件（运动控制算法、通信协议、控制调试）</span>
+      <span class="en">Control / software — motion control, comms protocol, tuning</span>
+    </div>
+    <div class="table-scroll reveal">
+      <table>
+        <thead>
+          <tr>
+            <th><span class="zh">海报要求</span><span class="en">Requirement</span></th>
+            <th><span class="zh">我的现状 / 证据</span><span class="en">My current state / evidence</span></th>
+            <th><span class="zh">状态</span><span class="en">Status</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="req"><span class="zh">理解 PID 及<strong>每个参数的含义</strong></span><span class="en">Understand PID and <strong>what each term does</strong></span></td>
+            <td class="ev">
+              <span class="zh">写了<strong>能脱离硬件在 PC 上跑的 PID 仿真</strong>（C 语言，gcc 16.2 真实编译运行过），扫了 18 组参数，输出真实 CSV 与曲线。能指着数据说清：Kp 大→上升快但超调（Kp=8 时超调 0.85%）；Ki 消稳态误差但引入超调（Ki=50 时超调 2.89%）；<strong>积分饱和会把超调从 1.09% 干到 44.04%</strong>；纯微分把噪声抖动放大 2.8 倍，加一阶滤波后降回原水平。</span>
+              <span class="en">I wrote a <strong>hardware-free PID simulation in C</strong> (genuinely compiled and run with gcc 16.2), swept 18 cases, and kept the raw CSVs plus charts. With the data in hand I can explain: larger Kp cuts rise time but adds overshoot (0.85% at Kp=8); Ki removes steady-state error but adds overshoot (2.89% at Ki=50); <strong>integral windup pushes overshoot from 1.09% to 44.04%</strong>; pure derivative amplifies noise jitter 2.8×, and a first-order filter brings it back.</span>
+              <div style="margin-top:8px">
+                <a href="posts/integral-windup.html"><span class="zh">→ 展开：积分饱和那 44% 是怎么来的</span><span class="en">→ Deep dive: where that 44% overshoot comes from</span></a>
+              </div>
+            </td>
+            <td class="st"><span class="status s-done">✅ <span class="zh">已具备</span><span class="en">have it</span></span></td>
+          </tr>
+          <tr>
+            <td class="req"><span class="zh">较好的 <strong>C / C++</strong> 编程基础</span><span class="en">Solid <strong>C / C++</strong> foundation</span></td>
+            <td class="ev">
+              <span class="zh">本仓库全部算法代码是 C（结构体 + 指针 + 定点/浮点混合运算，按 HAL 风格分层：<code>pid.c</code> / <code>plant.c</code> / <code>sim.c</code>）；另有独立完成的软件项目 <a href="https://github.com/shisisishi/debate-notes" target="_blank" rel="noopener">debate-notes</a>（TypeScript + React + Electron + SQLite，含端到端测试）。</span>
+              <span class="en">All algorithm code here is C (structs, pointers, HAL-style layering: <code>pid.c</code> / <code>plant.c</code> / <code>sim.c</code>). Separately I built <a href="https://github.com/shisisishi/debate-notes" target="_blank" rel="noopener">debate-notes</a>, a TypeScript + React + Electron + SQLite app with end-to-end tests.</span>
+            </td>
+            <td class="st"><span class="status s-done">✅ <span class="zh">已具备</span><span class="en">have it</span></span></td>
+          </tr>
+          <tr>
+            <td class="req"><span class="zh">掌握 STM32 常用外设（<strong>定时器 / PWM / I2C / 串口 / ADC</strong>）</span><span class="en">STM32 peripherals (timers, PWM, I²C, UART, ADC)</span></td>
+            <td class="ev">
+              <span class="zh">已把每个外设的<strong>配置逻辑推成公式链</strong>（时钟树 → 预分频 → ARR/CCR → 实际频率；I²C 时序与上拉电阻取值；ADC 分辨率与参考电压），并规划成 11 章路线图的对应章节。<strong>板子未到货，上机验证与波形记录待补</strong>——到货后第一周做完 GPIO/定时器/PWM，第二周串口与 I²C。</span>
+              <span class="en">I've derived the configuration logic of each peripheral as a formula chain (clock tree → prescaler → ARR/CCR → actual frequency; I²C timing vs pull-up sizing; ADC resolution vs Vref) and mapped it into the 11-chapter roadmap. <strong>The board hasn't arrived, so on-hardware verification is still pending</strong> — GPIO/timer/PWM in week one after it lands, UART and I²C in week two.</span>
+            </td>
+            <td class="st"><span class="status s-part">🟡 <span class="zh">进行中</span><span class="en">in progress</span></span></td>
+          </tr>
+          <tr>
+            <td class="req"><span class="zh">会查<strong>数据手册</strong>、有自主查资料的意识</span><span class="en">Reads datasheets, self-directed research</span></td>
+            <td class="ev">
+              <span class="zh">学习笔记给自己定的硬规矩：<strong>每个结论必须标注出处</strong>（ST 的 RM0008 参考手册、SSD1306 手册、数据手册的具体章节/页码），不写「教程上说」。PID 那部分也不是抄的，是自己推的位置式/增量式公式并写成代码验证。</span>
+              <span class="en">A hard rule I set for my notes: <strong>every conclusion cites its source</strong> (specific sections/pages of ST's RM0008 reference manual, the SSD1306 datasheet, device datasheets) — never “because a tutorial said so”. The PID part isn't copied either: I derived the positional/incremental forms myself and verified them in code.</span>
+            </td>
+            <td class="st"><span class="status s-part">🟡 <span class="zh">进行中</span><span class="en">in progress</span></span></td>
+          </tr>
+          <tr>
+            <td class="req"><span class="zh">CubeMX 配置并完成简单项目（如呼吸灯）</span><span class="en">CubeMX-configured simple project (e.g. breathing LED)</span></td>
+            <td class="ev">
+              <span class="zh">工具链与工程结构已就位（本机已装 arm-none-eabi / w64devkit，算法模块能脱离硬件编译测试）；<strong>CubeMX + Keil 的完整工程待硬件到货后落地</strong>（C 盘空间不足，正在清理后安装）。</span>
+              <span class="en">Toolchain and project layout are ready (w64devkit/arm-none-eabi on this machine; algorithm modules compile and test off-hardware). <strong>The full CubeMX + Keil project lands once hardware arrives</strong> (freeing up disk space first).</span>
+            </td>
+            <td class="st"><span class="status s-plan">📝 <span class="zh">待补</span><span class="en">planned</span></span></td>
+          </tr>
+          <tr>
+            <td class="req"><span class="zh">熟悉常用模块（0.96 寸 OLED 等）</span><span class="en">Common modules (0.96" OLED etc.)</span></td>
+            <td class="ev">
+              <span class="zh">SSD1306 的显存分页结构、I²C 从机地址与 ACK 时序已经读过并整理；<strong>驱动代码与上机效果待补</strong>。</span>
+              <span class="en">I've read up on SSD1306's paged GDDRAM layout, I²C slave address and ACK timing; <strong>driver code and on-hardware results are pending</strong>.</span>
+            </td>
+            <td class="st"><span class="status s-plan">📝 <span class="zh">待补</span><span class="en">planned</span></span></td>
+          </tr>
+          <tr>
+            <td class="req"><span class="zh">研发任务：<strong>通信协议</strong>（帧头/校验/上位机）</span><span class="en">R&amp;D task: <strong>comms protocol</strong> (framing, checksum, host GUI)</span></td>
+            <td class="ev">
+              <span class="zh">仿真里的数据链路已经跑通「采样 → 打包 → 落盘 → 绘图」全过程；<strong>串口帧协议（帧头 + 长度 + 序号 + 载荷 + 校验和）与上位机脚本列在路线图第 10 章</strong>，等能用真实串口收发后再落地验证。</span>
+              <span class="en">The simulation pipeline already covers sample → pack → persist → plot end to end. <strong>The UART frame protocol (header + length + seq + payload + checksum) and host-side script are chapter 10 of the roadmap</strong>, to be validated once real UART traffic is available.</span>
+            </td>
+            <td class="st"><span class="status s-plan">📝 <span class="zh">待补</span><span class="en">planned</span></span></td>
+          </tr>
+          <tr>
+            <td class="req"><span class="zh">研发任务：底盘功率控制 / 电机控制（CAN）</span><span class="en">R&amp;D task: chassis power control / CAN motors</span></td>
+            <td class="ev">
+              <span class="zh">🔬 <strong>还没接触</strong>：只知道概念（裁判系统给功率上限，要按功率反推电流限幅），没写过 CAN，也没调过 M3508/M2006。这是我进了战队最想先补的一块。</span>
+              <span class="en">🔬 <strong>Not yet</strong>: I know the idea (the referee system caps power, so you limit current accordingly) but I've never written CAN code or tuned an M3508/M2006. This is the first thing I want to learn on the team.</span>
+            </td>
+            <td class="st"><span class="status s-none">❌ <span class="zh">还没做到</span><span class="en">not yet</span></span></td>
+          </tr>
+          <tr>
+            <td class="req"><span class="zh">不怕「坐牢」、积极探索、重视合作</span><span class="en">Endurance, curiosity, teamwork</span></td>
+            <td class="ev">
+              <span class="zh">这次的 PID 仿真就是「坐牢」的结果：为了搞清 Kd 对噪声的影响，把同一组参数跑了带滤波/不带滤波 3 种情况，发现抖动反而变大，又回去查一阶滤波的截止频率，才把结论写对。<strong>错的结论我没删，留在笔记里。</strong></span>
+              <span class="en">This PID work is exactly that kind of grind: to pin down how Kd interacts with noise I ran each case with and without a filter, found jitter getting <em>worse</em>, went back to the first-order filter's cutoff frequency, and only then wrote the conclusion down. <strong>I kept the wrong turns in the notes instead of deleting them.</strong></span>
+            </td>
+            <td class="st"><span class="status s-done">✅ <span class="zh">学习方式</span><span class="en">working style</span></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    
+    <div class="track-title reveal">
+      <span class="tag tag-cyan"><span class="zh">方向 B</span><span class="en">Track B</span></span>
+      <span class="zh">电路组 · 硬件（单片机外围电路、PCB、整车电气）</span>
+      <span class="en">Electronics / hardware — peripheral circuits, PCB, vehicle electrical</span>
+    </div>
+    <div class="table-scroll reveal">
+      <table>
+        <thead>
+          <tr>
+            <th><span class="zh">海报要求</span><span class="en">Requirement</span></th>
+            <th><span class="zh">我的现状 / 证据</span><span class="en">My current state / evidence</span></th>
+            <th><span class="zh">状态</span><span class="en">Status</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="req"><span class="zh">较强的<strong>学习能力与时间管理</strong></span><span class="en">Strong learning ability &amp; time management</span></td>
+            <td class="ev">
+              <span class="zh">用一个学期把自己的学习拆成「路线图 → 每章目标 → 每章可复现的实验」，并按周推进；这次从「只有一点 C 基础」到「能自己推导并验证 PID」，是完整的自学闭环（选资料 → 推导 → 写代码 → 跑数据 → 写结论）。</span>
+              <span class="en">I broke my own learning into a roadmap → per-chapter goals → reproducible experiments, and advanced it weekly. Going from “a bit of C” to deriving and validating PID myself is a complete self-study loop: pick sources → derive → code → run → conclude.</span>
+            </td>
+            <td class="st"><span class="status s-done">✅ <span class="zh">已体现</span><span class="en">shown</span></span></td>
+          </tr>
+          <tr>
+            <td class="req"><span class="zh">热爱<strong>动手实践</strong></span><span class="en">Loves hands-on work</span></td>
+            <td class="ev">
+              <span class="zh">为了不空等硬件，我先把「能在电脑上动手的部分」做到位：自己写仿真、自己扫参数、自己画曲线。硬件清单已经列好（最小系统板 + ST-Link + 面包板 + OLED + 电位器，约 ¥70），<strong>到货当天开始上机</strong>。</span>
+              <span class="en">Rather than waiting idle for hardware, I did the hands-on part that a PC allows: wrote the simulation, swept parameters, plotted the results. The BOM is ready (Blue Pill + ST-Link + breadboard + OLED + potentiometer, ~¥70) and I start on hardware the day it arrives.</span>
+            </td>
+            <td class="st"><span class="status s-part">🟡 <span class="zh">PC 侧已动手</span><span class="en">PC-side done</span></span></td>
+          </tr>
+          <tr>
+            <td class="req"><span class="zh">基本<strong>电学素养</strong></span><span class="en">Basic electrical literacy</span></td>
+            <td class="ev">
+              <span class="zh">我的做法是不照抄教程，而是<strong>把每个电路算清楚</strong>：LED 限流电阻怎么按压降与电流选、分压公式、I²C 上拉电阻取值与上升时间的关系、去耦电容为什么必须贴在电源脚旁边。这部分以「手算 + 公式」形式写进路线图第 03 / 08 章。</span>
+              <span class="en">Instead of copying tutorials I <strong>calculate every circuit</strong>: sizing an LED resistor from forward drop and current, the divider formula, how I²C pull-up value relates to rise time, and why decoupling caps must sit next to the power pin. This lives in chapters 03 / 08 as hand calculations and formulas.</span>
+            </td>
+            <td class="st"><span class="status s-part">🟡 <span class="zh">进行中</span><span class="en">in progress</span></span></td>
+          </tr>
+          <tr>
+            <td class="req"><span class="zh">有 <strong>STM32 开发经验</strong>者优先</span><span class="en">STM32 experience preferred</span></td>
+            <td class="ev">
+              <span class="zh">诚实说：<strong>还没有上机经验</strong>。有 PC 侧 C 语言工程能力、有对外设配置原理的推导、有一个完整软件项目的工程习惯；上机经验我来战队补。</span>
+              <span class="en">Honestly: <strong>no on-hardware experience yet</strong>. What I do have is C engineering on the PC side, derivation-level understanding of peripheral configuration, and the engineering habits from shipping a full software project. On-hardware experience is what I'm here to earn.</span>
+            </td>
+            <td class="st"><span class="status s-none">❌ <span class="zh">待补</span><span class="en">not yet</span></span></td>
+          </tr>
+          <tr>
+            <td class="req"><span class="zh">研发任务：单片机外围电路、<strong>PCB 与调试</strong></span><span class="en">R&amp;D task: peripheral circuits, <strong>PCB &amp; bring-up</strong></span></td>
+            <td class="ev">
+              <span class="zh">🔬 计划用立创 EDA 画第一块板（STM32 最小系统 + 电源部分），<strong>尚未开始布线、也没打样焊接过</strong>。我希望从焊接、测数据这类活开始参与。</span>
+              <span class="en">🔬 Plan: draw my first board in LCEDA (STM32 minimal system + power section). <strong>No routing, no fabrication, no soldering yet</strong>. I'm happy to start from soldering and measurement work.</span>
+            </td>
+            <td class="st"><span class="status s-plan">📝 <span class="zh">待补</span><span class="en">planned</span></span></td>
+          </tr>
+          <tr>
+            <td class="req"><span class="zh">研发任务：超级电容管理 / 无线充电 / 缓启动</span><span class="en">R&amp;D task: supercap manager / wireless charging / soft-start</span></td>
+            <td class="ev">
+              <span class="zh">❌ <strong>完全没接触过</strong>。这是海报里我最没底、也最想学的一块。</span>
+              <span class="en">❌ <strong>Zero exposure.</strong> This is the part of the poster I'm least sure about — and most eager to learn.</span>
+            </td>
+            <td class="st"><span class="status s-none">❌ <span class="zh">还没做到</span><span class="en">not yet</span></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<hr class="split">
+
+
+<section id="projects">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-idx">02 / PROJECTS</span>
+      <h2><span class="zh">两个项目</span><span class="en">Two projects</span></h2>
+      <p>
+        <span class="zh">一个是正在进行的嵌入式学习仓库，一个是我独立做完并公开的软件项目。共同点是：都能被点开、被运行、被追问。</span>
+        <span class="en">One is an in-progress embedded learning repo; the other is a software project I built and published on my own. Both can be opened, run and questioned.</span>
+      </p>
+    </div>
+
+    <div class="cards">
+      
+      <article class="card wide reveal">
+        <h3><span class="zh">STM32 学习笔记 · 从零开始的嵌入式入门</span><span class="en">STM32 Learning Notes · embedded from scratch</span></h3>
+        <div class="sub">C · gcc 16.2 · STM32F103C8T6（目标平台）· <span class="zh">含 18 组 PID 参数对照仿真</span><span class="en">18 PID sweep cases included</span> · <a href="https://github.com/shisisishi/stm32-learning-notes" target="_blank" rel="noopener">github.com/shisisishi/stm32-learning-notes</a></div>
+        <p>
+          <span class="zh">按「电路基础 → STM32 外设 → 控制算法」两条线并行走：电控线走 GPIO → 定时器/PWM → 串口 → I²C → ADC → 通信协议 → PID 闭环；电路线走欧姆定律/限流分压 → 去耦与电源完整性 → 原理图 → PCB。</span>
+          <span class="en">Two parallel tracks: control (GPIO → timers/PWM → UART → I²C → ADC → protocol → PID loop) and electronics (Ohm's law, current limiting, dividers → decoupling &amp; power integrity → schematic → PCB).</span>
+        </p>
+        <p>
+          <span class="zh"><strong>这个项目最硬的一块是可复现的 PID 仿真</strong>：为了让「Kp/Ki/Kd 各自在干什么」不靠感觉，我写了一个脱离硬件的电机模型 + 控制器，一次跑完 18 组参数，把上升时间、超调、稳态误差、稳态时间、控制量峰值、抖动全部量化成 CSV。下面两张图就是它的真实输出——不是示意图。</span>
+          <span class="en"><strong>The strongest part is a reproducible PID simulation.</strong> To keep “what does each term do” out of the realm of vibes, I built a hardware-free motor model plus controller, ran 18 parameter cases in one go, and quantified rise time, overshoot, steady-state error, settling time, peak control effort and jitter into CSV. The two charts below are its real output — not illustrations.</span>
+        </p>
+
+        <figure>
+          <div class="chart-frame">
+            <img src="assets/img/chart-windup.svg" alt="积分饱和对比：无抗饱和超调 44.04%，有抗饱和 1.09%" loading="lazy">
+          </div>
+          <figcaption>
+            <span class="zh"><b>图 1 · 积分饱和：</b>同一组 Kp=1 / Ki=50，只加不加抗饱和一项，超调从 <b>44.04%</b> 降到 <b>1.09%</b>，稳态时间从 139 ms 缩到 39 ms。原始数据 <code>data/windup_off.csv</code> / <code>windup_on.csv</code>。</span>
+            <span class="en"><b>Fig 1 · Integral windup:</b> same Kp=1 / Ki=50, anti-windup on vs off — overshoot drops from <b>44.04%</b> to <b>1.09%</b>, settling time from 139 ms to 39 ms. Raw data: <code>data/windup_off.csv</code> / <code>windup_on.csv</code>.</span>
+          </figcaption>
+        </figure>
+
+        <figure>
+          <div class="chart-frame">
+            <img src="assets/img/chart-noise-d-filter.svg" alt="微分与噪声：Kd 使抖动从 1.69V 升到 4.73V，一阶滤波后回到 1.88V" loading="lazy">
+          </div>
+          <figcaption>
+            <span class="zh"><b>图 2 · 微分是把双刃剑：</b>加了 Kd=0.001，抖动从 <b>1.69 V</b> 涨到 <b>4.73 V</b>（噪声放大 2.8 倍）；在微分后串一阶低通（τ=10 ms）后回落到 <b>1.88 V</b>。这就是「Kd 抑制超调但对噪声敏感」的实测证据。</span>
+            <span class="en"><b>Fig 2 · Derivative cuts both ways:</b> with Kd=0.001 jitter rises from <b>1.69 V</b> to <b>4.73 V</b> (2.8× noise amplification); adding a first-order low-pass after the derivative (τ=10 ms) brings it back to <b>1.88 V</b>. That's the measured evidence behind “Kd damps overshoot but hates noise”.</span>
+          </figcaption>
+        </figure>
+
+        <div class="foot">
+          <a class="btn" href="posts/integral-windup.html"><span class="zh">读这篇：44% 超调是怎么来的</span><span class="en">Read: where 44% overshoot comes from</span></a>
+          <a class="btn" href="posts/pid-three-terms.html"><span class="zh">读这篇：PID 三项各自在干什么</span><span class="en">Read: what each PID term does</span></a>
+          <a class="btn" href="#reproduce"><span class="zh">自己跑一遍（10 分钟）</span><span class="en">Reproduce it (10 min)</span></a>
+        </div>
+      </article>
+
+      
+      <article class="card reveal">
+        <h3><span class="zh">辩手手记 · debate-notes</span><span class="en">debate-notes</span></h3>
+        <div class="sub">Electron · React · TypeScript · SQLite · Windows · 2 ★</div>
+        <p>
+          <span class="zh">给辩手自己用的<strong>离线优先</strong>比赛记录程序：赛制、辩位、评委、票数、复盘笔记都在本地 SQLite 里，不依赖网络。从数据模型到界面全部自己写，并用端到端测试保护核心流程。</span>
+          <span class="en">An <strong>offline-first</strong> match log for debaters: formats, positions, judges, ballots and review notes all in local SQLite, no network needed. I wrote the data model and the UI myself and guarded the core flows with end-to-end tests.</span>
+        </p>
+        <ul>
+          <li><span class="zh">为什么做：市面上的记录工具都要联网 + 注册，赛场上网络不可靠</span><span class="en">Why: existing tools require accounts and connectivity; venues don't have reliable Wi-Fi</span></li>
+          <li><span class="zh">工程习惯：先定 schema 再写界面，改动都过测试</span><span class="en">Habits: schema before UI, every change goes through tests</span></li>
+          <li><span class="zh">和机器人有什么关系：C 之外的第二种语言、大型前端项目的组织方式</span><span class="en">Relevance: a second language beyond C, and how a larger front-end project is organised</span></li>
+        </ul>
+        <div class="foot">
+          <a class="btn" href="https://github.com/shisisishi/debate-notes" target="_blank" rel="noopener"><span class="zh">仓库</span><span class="en">Repository</span> ↗</a>
+        </div>
+      </article>
+
+      
+      <article class="card reveal">
+        <h3><span class="zh">我的学习方式</span><span class="en">How I study</span></h3>
+        <div class="sub"><span class="zh">自我要求（也是给自己上的紧箍咒）</span><span class="en">Self-imposed rules</span></div>
+        <ul>
+          <li><span class="zh"><strong>结论必须有出处</strong>：写「RM0008 第几节」而不是「网上说」</span><span class="en"><strong>Every claim cites a source</strong> — “RM0008 §x.y”, not “someone said”</span></li>
+          <li><span class="zh"><strong>数字必须是跑出来的</strong>：凡出现的数据，仓库里必有生成它的代码与原始文件</span><span class="en"><strong>Numbers must be produced, not recalled</strong> — every figure has code and raw files behind it</span></li>
+          <li><span class="zh"><strong>坑要写下来</strong>：想错的地方单独记一节，不删</span><span class="en"><strong>Log the wrong turns</strong> — mistakes get their own section, never deleted</span></li>
+          <li><span class="zh"><strong>做得到的才写</strong>：没上机就写「待上机」，不写「已调通」</span><span class="en"><strong>Write only what's true</strong> — “pending hardware”, never “verified”</span></li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<hr class="split">
+
+
+<section id="roadmap">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-idx">03 / ROADMAP</span>
+      <h2><span class="zh">学习路线与真实进度</span><span class="en">Roadmap and real progress</span></h2>
+      <p>
+        <span class="zh">我不写「完成度 35%」这种自己都说不清的数字，而是把每章拆成三件事逐格标注：<strong>要点整理 → 代码 → 上机波形/数据</strong>。🟡 表示开始了但没走完，⬜ 表示还没开始。<strong>唯一的 ✅✅ 在 PID 那一行，因为那是真的跑出来、有 CSV 可以核对的。</strong></span>
+        <span class="en">Instead of made-up percentages, each chapter is broken into three verifiable cells: <strong>notes → code → on-hardware traces/data</strong>. 🟡 means started but unfinished, ⬜ means not started. <strong>The only double-✅ row is PID — because that one really ran and has CSVs you can check.</strong></span>
+      </p>
+    </div>
+
+    <div class="table-scroll reveal">
+      <table>
+        <thead><tr>
+          <th><span class="zh">章节</span><span class="en">Chapter</span></th>
+          <th><span class="zh">要点整理</span><span class="en">Notes</span></th>
+          <th><span class="zh">代码（可编译）</span><span class="en">Code (compiles)</span></th>
+          <th><span class="zh">上机波形 / 数据</span><span class="en">On-hardware data</span></th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="zh">00 学习路线图与方法论</span><span class="en">00 Roadmap &amp; method</span></td>
+            <td><span class="status s-done">✅</span></td><td>—</td><td>—</td>
+          </tr>
+          <tr>
+            <td><span class="zh">09 PID 控制与参数整定</span><span class="en">09 PID control &amp; tuning</span></td>
+            <td><span class="status s-done">✅</span></td>
+            <td><span class="status s-done">✅ <span class="zh">gcc 真编译运行</span><span class="en">really compiled &amp; run</span></span></td>
+            <td><span class="status s-done">✅ <span class="zh">仿真数据 18 组</span><span class="en">18 sim cases</span></span><br><span style="font-size:12.6px;color:var(--muted)"><span class="zh">（PC 仿真，非真机）</span><span class="en">(PC simulation, not hardware)</span></span></td>
+          </tr>
+          <tr>
+            <td><span class="zh">10 通信协议设计</span><span class="en">10 Protocol design</span></td>
+            <td><span class="status s-part">🟡 <span class="zh">帧格式已定</span><span class="en">frame format fixed</span></span></td>
+            <td><span class="status s-plan">⬜</span></td><td><span class="status s-plan">⬜</span></td>
+          </tr>
+          <tr>
+            <td><span class="zh">01 环境搭建</span><span class="en">01 Toolchain</span></td>
+            <td><span class="status s-part">🟡</span></td>
+            <td><span class="status s-part">🟡 <span class="zh">PC 侧工具链可用</span><span class="en">PC-side toolchain works</span></span></td>
+            <td><span class="status s-plan">⬜ <span class="zh">CubeMX/Keil 未装</span><span class="en">CubeMX/Keil pending</span></span></td>
+          </tr>
+          <tr>
+            <td><span class="zh">03 电路基础（一）限流与分压</span><span class="en">03 Circuits I: limiting &amp; dividers</span></td>
+            <td><span class="status s-part">🟡</span></td><td><span class="status s-plan">⬜</span></td><td><span class="status s-plan">⬜</span></td>
+          </tr>
+          <tr>
+            <td><span class="zh">08 电路基础（二）电源与去耦</span><span class="en">08 Circuits II: power &amp; decoupling</span></td>
+            <td><span class="status s-part">🟡</span></td><td><span class="status s-plan">⬜</span></td><td><span class="status s-plan">⬜</span></td>
+          </tr>
+          <tr>
+            <td><span class="zh">02 GPIO · 04 定时器/PWM · 05 串口 · 06 I²C/OLED · 07 ADC</span><span class="en">02 GPIO · 04 Timers/PWM · 05 UART · 06 I²C/OLED · 07 ADC</span></td>
+            <td><span class="status s-part">🟡 <span class="zh">要点已列</span><span class="en">outlined</span></span></td>
+            <td><span class="status s-plan">⬜</span></td><td><span class="status s-plan">⬜</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="timeline reveal" style="margin-top:38px">
+      <div class="tl-item done">
+        <div class="tl-when">2026.09 · <span class="zh">已完成</span><span class="en">done</span></div>
+        <h4><span class="zh">把学习顺序倒过来：先跑通控制算法</span><span class="en">Reordering the path: get control running first</span></h4>
+        <p><span class="zh">确定「电路基础 → STM32 外设 → 控制算法」的路线，写出 PID 仿真并在本机真实编译运行，产出 18 组参数对照数据与 5 张曲线。</span><span class="en">Settled the “circuits → peripherals → control” order, wrote the PID simulation, compiled and ran it locally, and produced 18 sweep cases with real CSVs and 5 charts.</span></p>
+      </div>
+      <div class="tl-item now">
+        <div class="tl-when">2026.09–10 · <span class="zh">进行中</span><span class="en">in progress</span></div>
+        <h4><span class="zh">补齐文档、整理仓库、准备硬件</span><span class="en">Writing up, tidying the repo, sourcing hardware</span></h4>
+        <p><span class="zh">把仿真结论写成可读的文章与复现步骤；清理磁盘空间安装 CubeMX + Keil；按清单采购最小系统板、ST-Link、面包板、OLED。</span><span class="en">Turning results into readable write-ups and reproduction steps; freeing disk space for CubeMX + Keil; buying the Blue Pill, ST-Link, breadboard and OLED.</span></p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-when">2026.10–11 · <span class="zh">计划</span><span class="en">planned</span></div>
+        <h4><span class="zh">硬件到货：外设逐章上机</span><span class="en">Hardware arrives: peripherals on the board</span></h4>
+        <p><span class="zh">GPIO / 定时器 PWM / 串口 / I²C OLED / ADC 逐章上机，每章附真实波形与截图；把上机记录补进对应章节。</span><span class="en">GPIO, timer PWM, UART, I²C OLED and ADC on real hardware, each with real waveforms and screenshots appended to its chapter.</span></p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-when">2026.11–12 · <span class="zh">计划</span><span class="en">planned</span></div>
+        <h4><span class="zh">走出仿真：CAN 电机与底盘功率控制</span><span class="en">Beyond simulation: CAN motors &amp; chassis power control</span></h4>
+        <p><span class="zh">这是我最想补的短板——先调通 CAN 收发电机报文，再尝试电流限幅与功率控制闭环。也打算画第一块 PCB 并打样焊接。</span><span class="en">My biggest gap: first get CAN motor feedback working, then try current limiting and a power-control loop. I also want to route and fabricate my first PCB.</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="split">
+
+
+<section id="posts">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-idx">04 / WRITING</span>
+      <h2><span class="zh">我写的东西</span><span class="en">What I've written</span></h2>
+      <p>
+        <span class="zh">前 3 篇已经有了（内容全部基于仓库里的真实数据）；后面的章节在硬件到货后陆续补。</span>
+        <span class="en">The first three are live and grounded in the repo's real data; the rest follow once hardware arrives.</span>
+      </p>
+    </div>
+
+    <div class="posts reveal">
+      <a class="post" href="posts/pid-three-terms.html">
+        <span class="idx">01</span>
+        <span class="body">
+          <h4><span class="zh">PID 三项各自在干什么——一次真跑的仿真讲清楚</span><span class="en">What each PID term really does — explained by an actual run</span></h4>
+          <p><span class="zh">Kp / Ki / Kd 逐项扫参，每个结论都对应一张真实曲线和一行真实指标。</span><span class="en">Sweeping Kp, Ki and Kd one at a time — every claim backed by a real chart and a real metric row.</span></p>
+        </span>
+        <span class="meta">~12 min</span>
+      </a>
+      <a class="post" href="posts/integral-windup.html">
+        <span class="idx">02</span>
+        <span class="body">
+          <h4><span class="zh">44% 的超调是怎么来的：积分饱和与抗饱和</span><span class="en">Where a 44% overshoot comes from: integral windup</span></h4>
+          <p><span class="zh">同一组参数，超调 44.04% vs 1.09%。差别只在一行代码。</span><span class="en">Same parameters, 44.04% vs 1.09% overshoot. The difference is one line of code.</span></p>
+        </span>
+        <span class="meta">~8 min</span>
+      </a>
+      <a class="post" href="posts/why-f103-not-f407.html">
+        <span class="idx">03</span>
+        <span class="body">
+          <h4><span class="zh">为什么我先学 F103 而不是 RM 常用的 F407</span><span class="en">Why I started on the F103, not the F407 the team uses</span></h4>
+          <p><span class="zh">一个选型取舍：便宜、资料全、外设编程模型可以平移。</span><span class="en">A deliberate trade-off: cheaper, better documented, and the peripheral model transfers.</span></p>
+        </span>
+        <span class="meta">~6 min</span>
+      </a>
+      <div class="post" style="opacity:.6;cursor:default">
+        <span class="idx">04</span>
+        <span class="body">
+          <h4><span class="zh">定时器与 PWM：从时钟树算到占空比</span><span class="en">Timers &amp; PWM: from clock tree to duty cycle</span></h4>
+          <p><span class="zh">第 04 章 · 等硬件到货后补上机波形（呼吸灯 + 舵机角度实测）</span><span class="en">Chapter 04 · on-hardware waveforms to follow once the board arrives</span></p>
+        </span>
+        <span class="meta"><span class="zh">待上机</span><span class="en">pending</span></span>
+      </div>
+      <div class="post" style="opacity:.6;cursor:default">
+        <span class="idx">05</span>
+        <span class="body">
+          <h4><span class="zh">串口通信：帧格式、波特率与 printf 重定向</span><span class="en">UART: framing, baud rate and printf redirection</span></h4>
+          <p><span class="zh">第 05 章 · 计划用逻辑分析仪抓真实波形验证帧格式</span><span class="en">Chapter 05 · will verify framing with a logic-analyzer capture</span></p>
+        </span>
+        <span class="meta"><span class="zh">待上机</span><span class="en">pending</span></span>
+      </div>
+      <div class="post" style="opacity:.6;cursor:default">
+        <span class="idx">06</span>
+        <span class="body">
+          <h4><span class="zh">I²C 与 0.96 寸 OLED：时序、地址与显存分页</span><span class="en">I²C &amp; a 0.96" OLED: timing, address, paged memory</span></h4>
+          <p><span class="zh">第 06 章 · SSD1306 手册依据已整理，驱动待上机</span><span class="en">Chapter 06 · datasheet notes ready, driver pending hardware</span></p>
+        </span>
+        <span class="meta"><span class="zh">待上机</span><span class="en">pending</span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="split">
+
+
+<section id="reproduce">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-idx">05 / HARDWARE &amp; REPRODUCE</span>
+      <h2><span class="zh">硬件清单与「10 分钟复现」</span><span class="en">BOM and a 10-minute reproduction</span></h2>
+      <p>
+        <span class="zh">我买什么、为什么这么买，以及<strong>你怎么在本机把本文所有曲线重跑一遍</strong>。跑出来的数字应该和页面上的完全一样——如果不一样，那就是我错了。</span>
+        <span class="en">What I'm buying and why — plus <strong>how to regenerate every chart on this page on your own machine</strong>. The numbers should match exactly; if they don't, I'm the one who's wrong.</span>
+      </p>
+    </div>
+
+    <div class="cards">
+      <article class="card reveal">
+        <h3><span class="zh">硬件清单（约 ¥70）</span><span class="en">Bill of materials (~¥70)</span></h3>
+        <div class="table-scroll" style="border:0;background:transparent">
+          <table style="min-width:0">
+            <thead><tr><th><span class="zh">器件</span><span class="en">Part</span></th><th><span class="zh">型号</span><span class="en">Model</span></th><th><span class="zh">价</span><span class="en">Price</span></th></tr></thead>
+            <tbody>
+              <tr><td><span class="zh">主控板</span><span class="en">MCU board</span></td><td>STM32F103C8T6 <span class="zh">最小系统板</span><span class="en">(Blue Pill)</span></td><td>≈¥15</td></tr>
+              <tr><td><span class="zh">下载调试器</span><span class="en">Debug probe</span></td><td>ST-Link V2</td><td>≈¥20</td></tr>
+              <tr><td><span class="zh">面包板套件</span><span class="en">Breadboard kit</span></td><td>830 <span class="zh">孔 + 杜邦线 + LED + 电阻</span><span class="en">tie-points + jumpers + LEDs + resistors</span></td><td>≈¥15</td></tr>
+              <tr><td><span class="zh">显示</span><span class="en">Display</span></td><td>0.96" SSD1306 OLED (I²C)</td><td>≈¥10</td></tr>
+              <tr><td><span class="zh">其他</span><span class="en">Misc</span></td><td><span class="zh">10k 电位器、按键、USB-TTL</span><span class="en">10k pot, buttons, USB-TTL</span></td><td>≈¥10</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:14px;font-size:14.4px;color:var(--muted)">
+          <span class="zh">选 F103 而不是 RM 常用的 F407：资料最全、最便宜，而且外设的编程模型与 HAL API 和 F407 基本一致，打牢基础后迁移成本很低。</span>
+          <span class="en">Choosing the F103 over the team's F407: best-documented, cheapest, and its peripheral model and HAL API transfer almost directly — cheap to migrate later.</span>
+        </p>
+      </article>
+
+      <article class="card reveal">
+        <h3><span class="zh">10 分钟复现（不需要任何硬件）</span><span class="en">10-minute reproduction (no hardware needed)</span></h3>
+        <div class="sub"><span class="zh">需要：一个 C 编译器（gcc / clang / MSVC 任意）</span><span class="en">Requires: any C compiler</span></div>
+        <div class="steps">
+          <div class="step">
+            <h4><span class="zh">拿到代码</span><span class="en">Get the code</span></h4>
+            <pre><span class="c"># 仓库：github.com/shisisishi/stm32-learning-notes</span>
+git clone https://github.com/shisisishi/stm32-learning-notes
+cd stm32-learning-notes/code/06-pid-sim</pre>
+          </div>
+          <div class="step">
+            <h4><span class="zh">编译</span><span class="en">Compile</span></h4>
+            <pre>gcc -O2 -o pidsim sim.c pid.c plant.c -lm</pre>
+          </div>
+          <div class="step">
+            <h4><span class="zh">运行，生成 18 组数据</span><span class="en">Run: emits 18 data sets</span></h4>
+            <pre>./pidsim        <span class="c"># Windows: pidsim.exe</span>
+<span class="o">→ data/metrics.csv          18 组参数的关键指标</span>
+<span class="o">→ data/PID_kd002.csv        逐时刻 t / setpoint / omega / u</span>
+<span class="o">→ data/windup_on|off.csv    …</span></pre>
+          </div>
+          <div class="step">
+            <h4><span class="zh">核对</span><span class="en">Verify</span></h4>
+            <p>
+              <span class="zh">打开 <code>data/metrics.csv</code>，找 <code>windup_off</code> 那一行，超调应该是 <strong>44.04%</strong>；<code>windup_on</code> 应该是 <strong>1.09%</strong>。和本页图 1 对得上，就说明你看的确实是我跑出来的数据。</span>
+              <span class="en">Open <code>data/metrics.csv</code> and find the <code>windup_off</code> row: overshoot should read <strong>44.04%</strong>, and <code>windup_on</code> <strong>1.09%</strong>. If they match Fig 1, you're looking at data I actually produced.</span>
+            </p>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<hr class="split">
+
+
+<section id="gaps">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-idx">06 / HONEST GAPS</span>
+      <h2><span class="zh">我的短板（写在前面，不藏）</span><span class="en">My gaps — up front, not buried</span></h2>
+      <p>
+        <span class="zh">被问到这些，我会直接说「不会，但我知道该从哪学起」。</span>
+        <span class="en">If asked about these, I'll say plainly: “I can't do that yet, and here's where I'd start.”</span>
+      </p>
+    </div>
+    <div class="gaps reveal">
+      <div class="gap">
+        <h4><span class="x">✕</span> <span class="zh">CAN 总线</span><span class="en">CAN bus</span></h4>
+        <p><span class="zh">一行代码都没写过。RM 的电机（M3508 / M2006 / GM6020）全部走 CAN。</span><span class="en">Never written a line. Every RM motor (M3508 / M2006 / GM6020) speaks CAN.</span></p>
+        <p class="fix"><b><span class="zh">计划：</span><span class="en">Plan: </span></b><span class="zh">硬件到手第一件事就是调通 CAN 收发电机报文。</span><span class="en">first thing after the board arrives — get motor feedback frames working.</span></p>
+      </div>
+      <div class="gap">
+        <h4><span class="x">✕</span> <span class="zh">底盘功率控制</span><span class="en">Chassis power control</span></h4>
+        <p><span class="zh">只知道概念（裁判系统给功率上限，需要按功率反推电流限幅），没实现过。</span><span class="en">Concept only (the referee system caps power; you back out a current limit). Never implemented.</span></p>
+        <p class="fix"><b><span class="zh">计划：</span><span class="en">Plan: </span></b><span class="zh">先搞定 CAN + 电流环，再上功率闭环。</span><span class="en">CAN + current loop first, then the power loop.</span></p>
+      </div>
+      <div class="gap">
+        <h4><span class="x">✕</span> <span class="zh">上机经验</span><span class="en">On-hardware experience</span></h4>
+        <p><span class="zh">还没摸过真实的板子：没烧录过、没量过波形、没接过面包板。</span><span class="en">I haven't touched a real board: no flashing, no scope traces, no breadboarding.</span></p>
+        <p class="fix"><b><span class="zh">计划：</span><span class="en">Plan: </span></b><span class="zh">硬件到货当天开始，先点灯与 PWM，再串口与 I²C。</span><span class="en">Start the day it arrives — blink and PWM first, then UART and I²C.</span></p>
+      </div>
+      <div class="gap">
+        <h4><span class="x">✕</span> <span class="zh">PCB 实战</span><span class="en">Real PCB work</span></h4>
+        <p><span class="zh">没画过完整布线，也没打样、没焊接过贴片。</span><span class="en">No full routing, no fabrication, no SMD soldering yet.</span></p>
+        <p class="fix"><b><span class="zh">计划：</span><span class="en">Plan: </span></b><span class="zh">用立创 EDA 画最小系统板 + 电源部分并打样。</span><span class="en">Route a minimal-system + power board in LCEDA and get it fabricated.</span></p>
+      </div>
+      <div class="gap">
+        <h4><span class="x">✕</span> <span class="zh">RTOS 与串级控制</span><span class="en">RTOS &amp; cascaded control</span></h4>
+        <p><span class="zh">FreeRTOS 没上过；控制理论只到自控课的 PID 部分，串级 / 前馈没做过。</span><span class="en">No FreeRTOS; control theory stops at the PID part of my course — no cascade or feed-forward.</span></p>
+        <p class="fix"><b><span class="zh">计划：</span><span class="en">Plan: </span></b><span class="zh">裸机跑顺之后学 RTOS，仿真里加串级 PID。</span><span class="en">Bare-metal first, then RTOS; add cascade PID in the simulation.</span></p>
+      </div>
+      <div class="gap">
+        <h4><span class="x">✕</span> <span class="zh">机械与视觉</span><span class="en">Mechanical &amp; vision</span></h4>
+        <p><span class="zh">零接触，不在我的方向内，但会主动了解接口。</span><span class="en">Zero exposure — not my track, but I'll learn the interfaces.</span></p>
+        <p class="fix"><b><span class="zh">计划：</span><span class="en">Plan: </span></b><span class="zh">先搞清电控与机械/视觉之间的数据接口边界。</span><span class="en">First understand where control meets mechanical and vision.</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="split">
+
+
+<section id="about">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-idx">07 / ABOUT</span>
+      <h2><span class="zh">关于我</span><span class="en">About me</span></h2>
+    </div>
+    <div class="cards">
+      <article class="card wide reveal">
+        <p>
+          <span class="zh">我是王兴领，北京交通大学自动化与智能学院 2026 级本科生。入学前只会一点 C 语言，没碰过硬件；现在正在把嵌入式的两条线——<strong>控制</strong>与<strong>电路</strong>——同时往前推。</span>
+          <span class="en">I'm Wang Xingling, a 2026 undergraduate at BJTU's School of Automation and Intelligence. Before university I knew a bit of C and nothing about hardware; right now I'm advancing both tracks — <strong>control</strong> and <strong>electronics</strong> — at the same time.</span>
+        </p>
+        <p>
+          <span class="zh">我为什么想进 BNGU：我想做的不是「照着教程把灯点亮」，而是<strong>把一台车从电路、固件到控制整个讲得通</strong>。我知道自己现在离这个目标还远（短板那一节我都写出来了），但我也知道差距具体在哪、下一步该做什么。我需要的是一块能让我快速上机、有人能追问我的地方。</span>
+          <span class="en">Why BNGU: I don't want to just “light an LED by following a tutorial” — I want to <strong>understand a whole robot from circuit to firmware to control loop</strong>. I know exactly how far I am from that (see the gaps section) — but I also know precisely what's missing and what comes next. What I need is a place where I can get hands-on fast and where people will push back on my answers.</span>
+        </p>
+        <p>
+          <span class="zh">我可以立刻做的活：写代码、跑数据、把结论写成能给人看的东西、焊接和测数据这类基础工作。<strong>我不挑活，只想快点摸到真板子。</strong></span>
+          <span class="en">What I can contribute immediately: writing code, running experiments, turning results into readable write-ups, and the unglamorous work — soldering, measuring, logging. <strong>I'm not picky; I just want to get my hands on real hardware fast.</strong></span>
+        </p>
+
+        <div class="contact" style="margin-top:20px">
+          <a href="https://github.com/shisisishi" target="_blank" rel="noopener">GitHub · @shisisishi</a>
+          <a class="cline" href="https://github.com/shisisishi" target="_blank" rel="noopener">
+            <span class="ic">🐙</span>
+            <span><span class="k">GITHUB</span><span class="v">github.com/shisisishi</span></span>
+          </a>
+          <a class="cline" href="https://github.com/shisisishi/stm32-learning-notes" target="_blank" rel="noopener">
+            <span class="ic">📘</span>
+            <span><span class="k"><span class="zh">主力仓库</span><span class="en">MAIN REPO</span></span><span class="v">stm32-learning-notes</span></span>
+          </a>
+          <a class="cline" href="resume.html">
+            <span class="ic">📄</span>
+            <span><span class="k"><span class="zh">简历</span><span class="en">RÉSUMÉ</span></span><span class="v"><span class="zh">在线版 · 可打印为 PDF</span><span class="en">web version · print to PDF</span></span></span>
+          </a>
+          <span>公开版不提供含联系方式的 PDF / Public edition</span>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+
+<footer>
+  <div class="wrap foot-grid">
+    <div>
+      <div class="zh">王兴领 · 北京交通大学 自动化与智能学院 · 2026 级</div>
+      <div class="en">Wang Xingling · BJTU, School of Automation and Intelligence · Class of 2026</div>
+      <div class="mono" style="margin-top:8px">
+        <span class="zh">本站为纯静态站点（零依赖、无构建），可部署于 GitHub Pages</span>
+        <span class="en">Static site (zero dependencies, no build step), hosted on Netlify</span>
+      </div>
+      <div class="mono" style="margin-top:4px">
+        <span class="zh">页面所有曲线由 <code>code/06-pid-sim</code> 的真实运行结果生成</span>
+        <span class="en">All charts generated from real runs of <code>code/06-pid-sim</code></span>
+      </div>
+    </div>
+    <div style="text-align:right">
+      <div class="quote"><span class="zh">慢慢来，比较快。</span><span class="en">Slow is smooth; smooth is fast.</span></div>
+      <div class="mono" style="margin-top:8px">© <span data-year>2026</span> Wang Xingling</div>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/app.js"></script>
+</body>
+</html>

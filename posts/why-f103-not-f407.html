@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>为什么我先学 F103 而不是 F407｜王兴领</title>
+<meta name="description" content="一份买板子之前的选型笔记：预算、磁盘空间、资料可得性、外设编程模型可迁移性——为什么先用 F103 打通原理。">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="../index.html">
+      <span class="dot"></span>
+      <span class="zh">王兴领 <small>· WXL</small></span>
+      <span class="en">Wang Xingling <small>· WXL</small></span>
+    </a>
+    <div class="nav-links">
+      <a href="../index.html#skills"><span class="zh">技能对照</span><span class="en">Skill map</span></a>
+      <a href="../index.html#projects"><span class="zh">项目</span><span class="en">Projects</span></a>
+      <a href="../index.html#posts"><span class="zh">全部文章</span><span class="en">All writing</span></a>
+      <a href="../resume.html"><span class="zh">简历</span><span class="en">Résumé</span></a>
+    </div>
+    <button class="lang-btn" type="button" aria-label="切换语言 / Switch language">EN</button>
+  </div>
+</nav>
+
+<div class="wrap crumb">
+  <a href="../index.html">首页</a> / <a href="../index.html#posts">文章</a> / 硬件 03
+</div>
+
+<div class="wrap">
+  <header class="article-head">
+    <span class="kicker">硬件选型 · 决策记录</span>
+    <h1>为什么我先学 F103 而不是 F407</h1>
+    <div class="article-meta">
+      <span>2026-09-16</span><span>·</span><span>约 6 分钟</span><span>·</span>
+      <span>STM32F103C8T6 vs STM32F4</span>
+    </div>
+  </header>
+
+  <div class="callout en" style="margin-top:22px">
+    <span class="t">Note</span>
+    Written in Chinese; the comparison table is language-neutral. Happy to discuss the reasoning in English.
+  </div>
+
+  <article class="article-body">
+    <div class="callout warn">
+      <span class="t">先把话说在前面</span>
+      两块板子<strong>我都没用过</strong>。所以这一篇不是「经验帖」，而是我买之前的<strong>选型笔记</strong>：依据是 ST 官方产品页与数据手册、以及我实际面临的约束（预算、磁盘空间、学习目标）。我把依据写出来，如果你觉得哪条判断错了，直接告我，我改。
+    </div>
+
+    <h2>一、先摆约束，再谈选型</h2>
+    <p>选型从来不是「哪个芯片强」，而是「在什么约束下，哪个更值得先学」。我的约束是三条：</p>
+    <ul>
+      <li><strong>预算</strong>：入门全套想在 ¥100 以内解决（最小系统板 + 下载器 + 面包板 + 外设）。</li>
+      <li><strong>磁盘</strong>：我这台电脑 C 盘只剩 3 GB。Keil MDK 装完约 1.5 GB，CubeMX 还要装 Java 环境、加起来约 1 GB——这是必须先解决的问题，也直接影响我能用多重的工具链。</li>
+      <li><strong>目标</strong>：这个阶段我要的是<strong>把外设原理打通</strong>（GPIO / 定时器 / PWM / 串口 / I²C / ADC），不是马上把一台车跑起来。</li>
+    </ul>
+
+    <h2>二、两颗芯片差在哪</h2>
+    <div class="table-scroll">
+      <table>
+        <thead><tr>
+          <th>项目</th>
+          <th>STM32F103C8T6<br><span style="font-weight:400">（Blue Pill 最小系统板）</span></th>
+          <th>STM32F4 一档<br><span style="font-weight:400">（战队常用）</span></th>
+        </tr></thead>
+        <tbody>
+          <tr><td>内核 / 主频</td><td>Cortex-M3 @ 72 MHz</td><td>Cortex-M4F @ 168 MHz</td></tr>
+          <tr><td>硬件浮点 FPU</td><td><strong>无</strong>（float 走软件浮点库）</td><td>有（单精度）</td></tr>
+          <tr><td>Flash / RAM</td><td>64 KB / 20 KB</td><td>512 KB~1 MB / 192 KB</td></tr>
+          <tr><td>CAN</td><td>1 路（bxCAN）</td><td>2 路</td></tr>
+          <tr><td>定时器</td><td>1 个高级 + 3 个通用</td><td>2 个高级 + 更多通用</td></tr>
+          <tr><td>ADC</td><td>2 × 12 位</td><td>3 × 12 位</td></tr>
+          <tr><td>最小系统板价格</td><td><strong>≈ ¥15</strong></td><td>≈ ¥40 起（官方开发板数百元）</td></tr>
+          <tr><td>中文资料密度</td><td>最多（几乎所有入门教程都用它）</td><td>多，但更复杂</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:14.6px;color:var(--muted)">
+      数据来源：<a href="https://www.st.com.cn/zh/microcontrollers-microprocessors/stm32f103c8.html" target="_blank" rel="noopener">ST 官方 STM32F103C8 产品页</a>、ST 参考手册 RM0008 与各型号数据手册。表格只列与「入门阶段」相关的差异，不是完整规格对比。
+    </p>
+
+    <h2>三、我为什么先用 F103</h2>
+    <ol>
+      <li>
+        <strong>海报要求的外设，它一个都不缺。</strong>GPIO、定时器/PWM、串口、I²C、ADC、外部中断——F103 全都有。<strong>学外设原理和学「更强的芯片」是两件事</strong>：Kp/Ki/Kd 的意义不会因为在 168 MHz 的芯片上跑就变，时钟树怎么算、ARR/CCR 怎么定、I²C 起始条件怎么发，这些在两个系列上是一模一样的知识。
+      </li>
+      <li>
+        <strong>外设的编程模型可以平移。</strong>两个系列都用 ST 的 HAL 库，函数名与结构（<code>HAL_GPIO_Init</code> / <code>HAL_TIM_PWM_Start</code> / <code>HAL_UART_Transmit</code> …）基本一致，CubeMX 的配置界面也是同一套逻辑。所以「先用 F103 打基础」不是绕路，<strong>之后迁移的成本主要在参数和外设数量上，不在概念上。</strong>
+      </li>
+      <li>
+        <strong>出错时更容易找到原因。</strong>F103 的资料密度最高，遇到问题（比如时钟树配错、串口乱码、I²C 卡住）时更容易找到同款问题的排查过程。入门阶段最大的成本不是芯片价格，是<strong>卡住的时间</strong>。
+      </li>
+      <li>
+        <strong>它便宜到可以「不怕烧」。</strong>¥15 的板子坏了再买一块就是。这一点对新手挺重要——我希望能放心地把杜邦线插错、把电源接反一次，而不是每接一根线都怕弄坏几百块的开发板。
+      </li>
+    </ol>
+
+    <h2>四、代价我也写清楚</h2>
+    <ul>
+      <li><strong>没有 FPU</strong>：所有 <code>float</code> 运算走软件浮点库，比 F4 慢很多。这也是我在 <code>pid.h</code> 里特意用 <code>float</code> 而不是 <code>double</code> 的原因——在 Cortex-M3 上 <code>double</code> 的运算量还要再翻一倍。</li>
+      <li><strong>RAM 只有 20 KB</strong>：不能随便开大数组。</li>
+      <li><strong>CAN 只有 1 路</strong>，定时器数量也更少。如果目标直接是「一台能上赛场的车」，F103 是不够的——那时候该直接上 F4。</li>
+      <li><strong>主频低</strong>：高频率的控制环（比如电流环跑 10 kHz 以上）在它上面会吃紧。</li>
+    </ul>
+
+    <h2>五、什么情况下我会直接选 F4</h2>
+    <p>
+      如果我的目标是「两个月内做出一台能跑的整车」，那正确的做法是直接上 F4——因为 CAN 电机、功率控制、多路外设并发这些事，<strong>在 F103 上做不了或者做得很难受</strong>。
+    </p>
+    <p>
+      但我的现状是「零硬件经验、要先把原理弄懂」，所以我把顺序定成：<strong>先用 F103 把外设和电路基础打通 → 再学到 F4（外设模型直接平移）→ 进队之后上真实车</strong>。这个顺序的代价只是多花 ¥15 和一段时间，换来的是每一步都能自己讲清楚。
+    </p>
+
+    <div class="callout">
+      <span class="t">这条「先便宜板子、后迁移」的思路，代价是什么</span>
+      代价是：我<strong>现在还不能直接上手战队的主力平台</strong>。这一点我在主页的短板清单里也写了。我选择接受这个代价，因为比起「拿着一块 F4 却讲不清时钟树」，我更想先把原理讲得清楚。
+    </div>
+
+    <div class="article-foot">
+      <a class="btn" href="integral-windup.html">← 上一篇：44% 的超调是怎么来的</a>
+      <a class="btn" href="../index.html#reproduce">看硬件清单与复现步骤</a>
+    </div>
+  </article>
+</div>
+
+<footer>
+  <div class="wrap foot-grid">
+    <div>
+      <div class="zh">王兴领 · 北京交通大学 自动化与智能学院 · 2026 级</div>
+      <div class="en">Wang Xingling · BJTU, School of Automation and Intelligence · Class of 2026</div>
+    </div>
+    <div style="text-align:right"><div class="mono">© <span data-year>2026</span> Wang Xingling</div></div>
+  </div>
+</footer>
+
+<script src="../assets/js/app.js"></script>
+</body>
+</html>
